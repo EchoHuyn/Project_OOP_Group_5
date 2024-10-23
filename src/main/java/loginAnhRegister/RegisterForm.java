@@ -1,5 +1,7 @@
 package loginAnhRegister;
 
+import extensions.SendEmail;
+import extensions.Check_OTP;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -88,13 +90,20 @@ public class RegisterForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (validateForm()) {
                     Email = txtEmail.getText();
-                    OTP = generateOTP();
+                    OTP = Check_OTP.generateOTP();
                     SendEmail.sendEmail_OTP(OTP, Email); // Gửi OTP qua email
                     String inputOtp = JOptionPane.showInputDialog("Nhập mã OTP đã được gửi:");
 
                     // Kiểm tra mã OTP nhập vào
                     if (inputOtp != null && inputOtp.equals(OTP)) {
-                        saveAccountToFile(txtUsername.getText(), new String(txtPassword.getPassword()), txtEmail.getText());
+                        saveAccountToFile(
+                                txtName.getText(), 
+                                getSelectedDate(), 
+                                txtAddress.getText(), 
+                                txtUsername.getText(), 
+                                new String(txtPassword.getPassword()), 
+                                txtEmail.getText()
+                        );
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Mã OTP không chính xác, vui lòng thử lại!");
@@ -102,6 +111,14 @@ public class RegisterForm extends JFrame {
                 }
             }
         });
+    }
+
+    // Hàm lấy ngày sinh từ ComboBox
+    private String getSelectedDate() {
+        int day = (int) comboDay.getSelectedItem();
+        int month = (int) comboMonth.getSelectedItem();
+        int year = (int) comboYear.getSelectedItem();
+        return day + "/" + month + "/" + year;
     }
 
     // Hàm kiểm tra form
@@ -147,20 +164,16 @@ public class RegisterForm extends JFrame {
         return false;
     }
 
-    // Hàm sinh OTP ngẫu nhiên
-    private String generateOTP() {
-        Random random = new Random();
-        StringBuilder otp = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            otp.append(random.nextInt(10));
-        }
-        return otp.toString();
-    }
-
-    // Hàm lưu tài khoản vào file account.csv
-    private void saveAccountToFile(String username, String password, String email) {
+    // Hàm lưu tài khoản vào file accountCustomers.csv
+    private void saveAccountToFile(String name, String birthDate, String address, String username, String password, String email) {
         try (FileWriter writer = new FileWriter("accountCustomers.csv", true)) { // Mở file ở chế độ ghi tiếp (append mode)
-            writer.append(username)
+            writer.append(name)
+                  .append(",")
+                  .append(birthDate)
+                  .append(",")
+                  .append(address)
+                  .append(",")
+                  .append(username)
                   .append(",")
                   .append(password)
                   .append(",")

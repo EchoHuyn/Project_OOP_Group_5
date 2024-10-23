@@ -1,4 +1,4 @@
-package loginAnhRegister;
+package extensions;
 
 import java.util.Properties;
 import javax.mail.*;
