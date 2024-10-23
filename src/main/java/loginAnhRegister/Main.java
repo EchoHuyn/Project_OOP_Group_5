@@ -43,6 +43,6 @@ public class Main {
 //            System.out.println(); // In dòng trống giữa các điện thoại
 //        }
 
-
+        LoginForm.display();
     }
 }

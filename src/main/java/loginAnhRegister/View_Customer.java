@@ -16,15 +16,25 @@ public class View_Customer extends JFrame {
     private JTextField searchField;
     private JButton addToCartButton;
     private JButton searchButton;
+    private JButton backButton; // Thêm nút back
     private JComboBox<String> filterComboBox;
 
     private ArrayList<Phones> phoneList;
+    private String customerName;
 
-    public View_Customer() {
+    public View_Customer(String name) {
+        this.customerName = name;
+
         // Thiết lập tiêu đề cho giao diện
         setTitle("Customer View - Phone Shopping");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Tạo JLabel "Hi, [name]"
+        JLabel welcomeLabel = new JLabel("Hi, " + name);
+        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 24));  // Font nổi bật
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setForeground(Color.BLUE);  // Màu chữ nổi bật
 
         // Load dữ liệu từ CSV
         phoneList = CsvFileHandler.readPhonesFromCSV("phones.csv");
@@ -39,6 +49,7 @@ public class View_Customer extends JFrame {
         // Tạo các nút và ô tìm kiếm
         addToCartButton = new JButton("Add to Cart");
         searchButton = new JButton("Search");
+        backButton = new JButton("Back"); // Nút Back
         searchField = new JTextField(15);
 
         // Tạo combo box để lọc theo tiêu chí
@@ -52,9 +63,11 @@ public class View_Customer extends JFrame {
         controlPanel.add(searchButton);
         controlPanel.add(filterComboBox);
         controlPanel.add(addToCartButton);
+        controlPanel.add(backButton); // Thêm nút Back
 
         // Thêm các thành phần vào JFrame
         setLayout(new BorderLayout());
+        add(welcomeLabel, BorderLayout.NORTH); // Thêm JLabel "Hi, [name]" lên đầu
         add(scrollPane, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
 
@@ -73,6 +86,15 @@ public class View_Customer extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, "You have successfully added the product to the cart.", "Cart", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // Xử lý sự kiện cho nút Back
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LoginForm.display();
+                dispose(); // Đóng giao diện hiện tại
             }
         });
 
@@ -97,7 +119,7 @@ public class View_Customer extends JFrame {
 
     // Hàm tìm kiếm điện thoại theo mã
     private ArrayList<Phones> searchPhoneById(String phoneId) {
-        if(phoneId.equals("")){
+        if(phoneId.equals("")) {
             return phoneList;
         }
         ArrayList<Phones> result = new ArrayList<>();
@@ -109,11 +131,11 @@ public class View_Customer extends JFrame {
         return result;
     }
 
-    public static void main(String[] args) {
+    public static void display(String name) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                View_Customer view = new View_Customer();
+                View_Customer view = new View_Customer(name);
                 view.setVisible(true);
             }
         });

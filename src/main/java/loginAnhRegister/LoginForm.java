@@ -1,13 +1,18 @@
 package loginAnhRegister;
 
+import Model.Customer;
+import Model.Phones;
+import Model.Seller;
 import extensions.SendEmail;
 import extensions.Check_OTP;
+import extensions.CsvFileHandler;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class LoginForm extends JFrame {
 
@@ -15,6 +20,9 @@ public class LoginForm extends JFrame {
     private JPasswordField passwordField;
     private JButton loginButton, registerButton;
     private JComboBox<String> roleComboBox; // Thêm combo box để chọn vai trò
+
+    private ArrayList<Customer> Customers;
+    private ArrayList<Seller> admin;
 
     public LoginForm() {
         // Tạo giao diện
@@ -61,9 +69,19 @@ public class LoginForm extends JFrame {
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Vui lòng nhập tên đăng nhập và mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    // Nếu cả hai đều đã được nhập, kiểm tra thông tin đăng nhập
+
+                    // Nếu cả hai đều đã được nhập, kiểm tra thông tin đăng nhập                   
                     if (checkLogin(username, password, role)) {
                         JOptionPane.showMessageDialog(null, "Đăng nhập thành công với vai trò: " + role);
+                        if (role.equals("customer")) {
+                            for (Customer x : Customers) {
+                                if (x.getUsername().equals(username) && x.getPassword().equals(password)) {
+                                    View_Customer.display(x.getName());
+                                    dispose();
+                                }
+                            }
+                        }
+
                     } else {
                         JOptionPane.showMessageDialog(null, "Tên đăng nhập hoặc mật khẩu sai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     }
@@ -93,48 +111,37 @@ public class LoginForm extends JFrame {
 
     // Phương thức kiểm tra tên đăng nhập và mật khẩu dựa trên vai trò (admin/customer)
     private boolean checkLogin(String username, String password, String role) {
-        String line;
-        String csvFile = (role.equals("customer")) ? "accountCustomers.csv" : "accountAdmin.csv";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-
-                // Kiểm tra nếu có ít nhất 2 cột trong file (username và password ở cuối)
-                if (values.length >= 2) {
-                    String storedUsername = values[values.length - 3]; // Cột áp chót là tên đăng nhập
-                    String storedPassword = values[values.length - 2]; // Cột cuối là mật khẩu
-
-                    if (role.equals("admin") && storedUsername.equals(username) && storedPassword.equals(password)) {
-
-                        //Sinh ma OTP va gui ve gmail
-                        String emailCheck = values[values.length - 1];
-                        String OTP = Check_OTP.generateOTP();
-                        SendEmail.sendEmail_OTP(OTP, emailCheck);
-
-                        //Kiem tra otp
-                        String inputOtp = JOptionPane.showInputDialog(null, "\nVui lòng nhập mã OTP:");
-
-                        // Kiểm tra OTP
-                        if (inputOtp != null && inputOtp.equals(OTP)) {
-                            return true;
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Mã OTP không chính xác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-
-                    if (storedUsername.equals(username) && storedPassword.equals(password)) {
-                        return true;
-                    }
+        if (role.equals("customer")) {
+            Customers = CsvFileHandler.readCustomersFromCSV("accountCustomers.csv");
+            for (Customer x : Customers) {
+                if (x.getUsername().equals(username) && x.getPassword().equals(password)) {
+                    return true;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            admin = CsvFileHandler.readSellersFromCSV("accountAdmin.csv");
+            if (admin.get(0).getUsername().equals(username) && admin.get(0).getPassword().equals(password)) {
+
+                //Sinh ma OTP va gui ve gmail
+                String emailCheck = admin.get(0).getEmail();
+                String OTP = Check_OTP.generateOTP();
+                SendEmail.sendEmail_OTP(OTP, emailCheck);
+
+                //Kiem tra otp
+                String inputOtp = JOptionPane.showInputDialog(null, "\nVui lòng nhập mã OTP:");
+
+                // Kiểm tra OTP
+                if (inputOtp != null && inputOtp.equals(OTP)) {
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(null, "Mã OTP không chính xác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
         return false;
     }
 
-    public static void main(String[] args) {
+    public static void display() {
         new LoginForm();
     }
 }

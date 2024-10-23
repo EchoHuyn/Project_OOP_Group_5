@@ -2,6 +2,7 @@ package extensions;
 
 import Model.Customer;
 import Model.Phones;
+import Model.Seller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -138,5 +139,63 @@ public class CsvFileHandler {
         }
 
         return phones;
+    }
+    
+    //Đọc ghi file csv của Admin
+    public static void writeSellersToCSV(ArrayList<Seller> sellers, String fileName) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            // Ghi tiêu đề cột
+            writer.write("Username,Password,Email");
+            writer.newLine();
+
+            // Ghi từng seller vào file
+            for (Seller seller : sellers) {
+                writer.write(seller.getUsername() + "," +
+                        seller.getPassword() + "," +
+                        seller.getEmail());
+                writer.newLine();
+            }
+
+            System.out.println("Ghi dữ liệu vào file CSV thành công!");
+
+        } catch (IOException e) {
+            System.out.println("Lỗi khi ghi vào file CSV: " + e.getMessage());
+        }
+    }
+    
+    public static ArrayList<Seller> readSellersFromCSV(String fileName) {
+        ArrayList<Seller> sellers = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            boolean isHeader = true; // Bỏ qua tiêu đề cột
+
+            while ((line = br.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue; // Bỏ qua dòng đầu tiên (tiêu đề)
+                }
+
+                String[] values = line.split(",");
+
+                // Kiểm tra xem file có đúng định dạng không
+                if (values.length == 3) {
+                    String username = values[0];
+                    String password = values[1];
+                    String email = values[2];
+
+                    // Tạo đối tượng Seller và thêm vào ArrayList
+                    Seller seller = new Seller(username, password, email);
+                    sellers.add(seller);
+                }
+            }
+
+            System.out.println("Đọc dữ liệu từ file CSV thành công!");
+
+        } catch (IOException e) {
+            System.out.println("Lỗi khi đọc file CSV: " + e.getMessage());
+        }
+
+        return sellers;
     }
 }
