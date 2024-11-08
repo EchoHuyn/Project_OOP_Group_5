@@ -56,7 +56,7 @@ public class RegisterForm extends JFrame {
         // Các trường nhập liệu
         addField("Tên:", txtName = new JTextField(15), mainPanel, gbc);
         addField("Ngày sinh:", createBirthPanel(), mainPanel, gbc);
-        addField("Giới tính:", comboGender = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"}), mainPanel, gbc);
+        addField("Giới tính:", comboGender = new JComboBox<>(new String[]{"Female", "Male", "Other"}), mainPanel, gbc);
         addField("Gmail:", txtEmail = new JTextField(), mainPanel, gbc);
         addField("Địa chỉ:", txtAddress = new JTextField(), mainPanel, gbc);
         addField("Tài khoản:", txtUsername = new JTextField(), mainPanel, gbc);

@@ -4,6 +4,7 @@ loginAnhRegister\View_Customer.class
 loginAnhRegister\View_Customer$2.class
 loginAnhRegister\View_Seller.class
 extensions\SendEmail$1.class
+Model\Order.class
 loginAnhRegister\RegisterForm$1.class
 extensions\Check_OTP.class
 loginAnhRegister\View_Seller_Customer.class
