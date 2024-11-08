@@ -87,4 +87,8 @@ public class View_Seller extends JFrame {
             new View_Seller().setVisible(true);
         });
     }   
+    
+    public static void main(String[] args) {
+        display();
+    }
 }

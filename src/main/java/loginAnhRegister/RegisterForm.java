@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
 
 public class RegisterForm extends JFrame {
 
@@ -23,108 +22,57 @@ public class RegisterForm extends JFrame {
     private String Email;
 
     public RegisterForm() {
-        setTitle("Register Form");
+        setTitle("Đăng Kí");
         setSize(450, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Set layout and padding
+// Đặt màu nền cho toàn bộ JFrame
+        getContentPane().setBackground(new Color(60, 63, 65)); // màu xám đậm
+
+// Đặt bố cục chính
+        setLayout(new BorderLayout());
+
+// Tiêu đề căn giữa
+        JLabel lblTitle = new JLabel("Đăng Kí", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+
+// Đặt màu nền cho lblTitle để phù hợp với màu nền xám đậm
+        lblTitle.setBackground(new Color(60, 63, 65));
+        lblTitle.setOpaque(true); // Đảm bảo màu nền của lblTitle hiển thị
+        add(lblTitle, BorderLayout.NORTH);
+
+// Panel chứa các thành phần
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        mainPanel.setBackground(Color.WHITE); // Set background color
+        mainPanel.setBackground(new Color(60, 63, 65)); // màu nền đồng bộ
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Form fields
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        mainPanel.add(new JLabel("Tên:"), gbc);
+        // Các trường nhập liệu
+        addField("Tên:", txtName = new JTextField(15), mainPanel, gbc);
+        addField("Ngày sinh:", createBirthPanel(), mainPanel, gbc);
+        addField("Giới tính:", comboGender = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"}), mainPanel, gbc);
+        addField("Gmail:", txtEmail = new JTextField(), mainPanel, gbc);
+        addField("Địa chỉ:", txtAddress = new JTextField(), mainPanel, gbc);
+        addField("Tài khoản:", txtUsername = new JTextField(), mainPanel, gbc);
+        addField("Mật khẩu:", txtPassword = new JPasswordField(), mainPanel, gbc);
+        addField("Nhập lại mật khẩu:", txtPasswordConfirm = new JPasswordField(), mainPanel, gbc);
 
-        gbc.gridx = 1;
-        txtName = new JTextField(15);
-        mainPanel.add(txtName, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Ngày sinh:"), gbc);
-
-        JPanel birthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        comboDay = new JComboBox<>();
-        for (int i = 1; i <= 31; i++) comboDay.addItem(i);
-
-        comboMonth = new JComboBox<>();
-        for (int i = 1; i <= 12; i++) comboMonth.addItem(i);
-
-        comboYear = new JComboBox<>();
-        for (int i = 2024; i >= 1900; i--) comboYear.addItem(i);
-
-        birthPanel.add(comboDay);
-        birthPanel.add(comboMonth);
-        birthPanel.add(comboYear);
-        gbc.gridx = 1;
-        mainPanel.add(birthPanel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Giới tính:"), gbc);
-
-        gbc.gridx = 1;
-        comboGender = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
-        mainPanel.add(comboGender, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Gmail:"), gbc);
-
-        gbc.gridx = 1;
-        txtEmail = new JTextField();
-        mainPanel.add(txtEmail, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Địa chỉ:"), gbc);
-
-        gbc.gridx = 1;
-        txtAddress = new JTextField();
-        mainPanel.add(txtAddress, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Tài khoản:"), gbc);
-
-        gbc.gridx = 1;
-        txtUsername = new JTextField();
-        mainPanel.add(txtUsername, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Mật khẩu:"), gbc);
-
-        gbc.gridx = 1;
-        txtPassword = new JPasswordField();
-        mainPanel.add(txtPassword, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        mainPanel.add(new JLabel("Nhập lại mật khẩu:"), gbc);
-
-        gbc.gridx = 1;
-        txtPasswordConfirm = new JPasswordField();
-        mainPanel.add(txtPasswordConfirm, gbc);
-
-        // Buttons
+        // Tạo và thêm nút bấm
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(new Color(60, 63, 65)); // màu nền đồng bộ
         btnRegister = new JButton("Xác nhận đăng kí");
-        btnRegister.setBackground(new Color(0, 123, 255));
-        btnRegister.setForeground(Color.WHITE);
-        buttonPanel.add(btnRegister);
+        styleButton(btnRegister);
 
         JButton btnBackToLogin = new JButton("Quay lại đăng nhập");
-        btnBackToLogin.setBackground(Color.RED);
-        btnBackToLogin.setForeground(Color.WHITE);
+        styleButton(btnBackToLogin);
+
+        buttonPanel.add(btnRegister);
         buttonPanel.add(btnBackToLogin);
 
         gbc.gridx = 0;
@@ -132,17 +80,17 @@ public class RegisterForm extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(buttonPanel, gbc);
 
-        // Add main panel to frame
-        add(mainPanel);
+        // Thêm mainPanel vào trung tâm của JFrame
+        add(mainPanel, BorderLayout.CENTER);
 
-        // Register button action
+        // Xử lý sự kiện nút
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (validateForm()) {
                     Email = txtEmail.getText();
                     OTP = Check_OTP.generateOTP();
-                    SendEmail.sendEmail_OTP(OTP, Email); // Send OTP via email
+                    SendEmail.sendEmail_OTP(OTP, Email); // Gửi OTP qua email
                     String inputOtp = JOptionPane.showInputDialog("Nhập mã OTP đã được gửi:");
 
                     if (inputOtp != null && inputOtp.equals(OTP)) {
@@ -165,7 +113,6 @@ public class RegisterForm extends JFrame {
             }
         });
 
-        // Back to login button action
         btnBackToLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,7 +131,50 @@ public class RegisterForm extends JFrame {
         });
     }
 
-    // Hàm lấy ngày sinh từ ComboBox
+    private void addField(String label, Component component, JPanel panel, GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JLabel jLabel = new JLabel(label);
+        jLabel.setForeground(Color.WHITE);
+        panel.add(jLabel, gbc);
+
+        gbc.gridx = 1;
+        panel.add(component, gbc);
+    }
+
+    private JPanel createBirthPanel() {
+        JPanel birthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        comboDay = new JComboBox<>();
+        for (int i = 1; i <= 31; i++) {
+            comboDay.addItem(i);
+        }
+
+        comboMonth = new JComboBox<>();
+        for (int i = 1; i <= 12; i++) {
+            comboMonth.addItem(i);
+        }
+
+        comboYear = new JComboBox<>();
+        for (int i = 2024; i >= 1900; i--) {
+            comboYear.addItem(i);
+        }
+
+        birthPanel.add(comboDay);
+        birthPanel.add(comboMonth);
+        birthPanel.add(comboYear);
+        birthPanel.setBackground(new Color(60, 63, 65));
+
+        return birthPanel;
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        button.setBackground(new Color(0, 120, 215));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    }
+
     private String getSelectedDate() {
         int day = (int) comboDay.getSelectedItem();
         int month = (int) comboMonth.getSelectedItem();
@@ -228,6 +218,7 @@ public class RegisterForm extends JFrame {
 
         // Chuẩn hóa họ và tên
         txtName.setText(formatName(txtName.getText()));
+        txtAddress.setText(formatName(txtAddress.getText()));
 
         return true;
     }
@@ -248,7 +239,6 @@ public class RegisterForm extends JFrame {
 
         return formattedName.toString().trim();
     }
-
 
     // Hàm kiểm tra xem email có tồn tại trong file account.csv không
     private boolean isEmailExist(String email) {
