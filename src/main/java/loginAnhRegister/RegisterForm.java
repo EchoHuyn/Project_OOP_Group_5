@@ -13,19 +13,21 @@ import java.io.IOException;
 import java.util.Random;
 
 public class RegisterForm extends JFrame {
+
     private JTextField txtName, txtEmail, txtAddress, txtUsername;
     private JPasswordField txtPassword, txtPasswordConfirm;
     private JComboBox<Integer> comboDay, comboMonth, comboYear;
+    private JComboBox<String> comboGender;
     private JButton btnRegister;
     private String OTP;
     private String Email;
 
     public RegisterForm() {
         setTitle("Register Form");
-        setSize(400, 400);
+        setSize(400, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(10, 2, 10, 10));
+        setLayout(new GridLayout(11, 2, 10, 10));
 
         // Tên
         add(new JLabel("Tên:"));
@@ -56,6 +58,11 @@ public class RegisterForm extends JFrame {
         birthPanel.add(comboYear);
         add(birthPanel);
 
+        // Giới tính
+        add(new JLabel("Giới tính:"));
+        comboGender = new JComboBox<>(new String[]{"Male", "Female", "Other"});
+        add(comboGender);
+
         // Email
         add(new JLabel("Gmail:"));
         txtEmail = new JTextField();
@@ -85,6 +92,28 @@ public class RegisterForm extends JFrame {
         btnRegister = new JButton("Đăng kí");
         add(btnRegister);
 
+        // Add "Back to Login" button
+        JButton btnBackToLogin = new JButton("Back to Login");
+        add(btnBackToLogin);
+
+        btnBackToLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(
+                        RegisterForm.this,
+                        "Bạn có chắc chắn muốn quay lại khung đăng nhập?",
+                        "Xác nhận",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (response == JOptionPane.YES_OPTION) {
+                    LoginForm.display(); // Assumes LoginForm has a display method to show the login form
+                    dispose();
+                }
+            }
+        });
+
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,11 +126,12 @@ public class RegisterForm extends JFrame {
                     // Kiểm tra mã OTP nhập vào
                     if (inputOtp != null && inputOtp.equals(OTP)) {
                         saveAccountToFile(
-                                txtName.getText(), 
-                                getSelectedDate(), 
-                                txtAddress.getText(), 
-                                txtUsername.getText(), 
-                                new String(txtPassword.getPassword()), 
+                                txtName.getText(),
+                                getSelectedDate(),
+                                comboGender.getSelectedItem().toString(),
+                                txtAddress.getText(),
+                                txtUsername.getText(),
+                                new String(txtPassword.getPassword()),
                                 txtEmail.getText()
                         );
                         dispose();
@@ -165,20 +195,22 @@ public class RegisterForm extends JFrame {
     }
 
     // Hàm lưu tài khoản vào file accountCustomers.csv
-    private void saveAccountToFile(String name, String birthDate, String address, String username, String password, String email) {
+    private void saveAccountToFile(String name, String birthDate, String gender, String address, String username, String password, String email) {
         try (FileWriter writer = new FileWriter("accountCustomers.csv", true)) { // Mở file ở chế độ ghi tiếp (append mode)
             writer.append(name)
-                  .append(",")
-                  .append(birthDate)
-                  .append(",")
-                  .append(address)
-                  .append(",")
-                  .append(username)
-                  .append(",")
-                  .append(password)
-                  .append(",")
-                  .append(email)
-                  .append("\n");
+                    .append(",")
+                    .append(gender)
+                    .append(",")
+                    .append(birthDate)
+                    .append(",")
+                    .append(address)
+                    .append(",")
+                    .append(username)
+                    .append(",")
+                    .append(password)
+                    .append(",")
+                    .append(email)
+                    .append("\n");
             writer.flush();
             JOptionPane.showMessageDialog(this, "Tài khoản đã được lưu vào file accountCustomers.csv");
         } catch (IOException ex) {

@@ -7,7 +7,13 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class View_Customer extends JFrame {
 
@@ -52,9 +58,19 @@ public class View_Customer extends JFrame {
         backButton = new JButton("Back"); // Nút Back
         searchField = new JTextField(15);
 
-        // Tạo combo box để lọc theo tiêu chí
-        String[] filterOptions = {"All", "Brand: Apple", "Brand: Samsung", "Price > 500"};
-        filterComboBox = new JComboBox<>(filterOptions);
+        // Lấy danh sách thương hiệu duy nhất từ phoneList
+        Set<String> uniqueBrands = new HashSet<>();
+        for (Phones phone : phoneList) {
+            uniqueBrands.add(phone.getBrand());
+        }
+
+        // Tạo combo box lọc và thêm các thương hiệu duy nhất
+        filterComboBox = new JComboBox<>();
+        filterComboBox.addItem("All"); // Tùy chọn mặc định là "All"
+        for (String brand : uniqueBrands) {
+            filterComboBox.addItem("Brand: " + brand);
+        }
+        filterComboBox.addItem("Price > 500"); // Thêm tiêu chí lọc theo giá
 
         // Tạo panel chứa các nút và ô tìm kiếm
         JPanel controlPanel = new JPanel();
@@ -81,10 +97,58 @@ public class View_Customer extends JFrame {
             }
         });
 
-        // Xử lý sự kiện cho nút Thêm giỏ hàng
         addToCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int selectedRow = phoneTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select a phone to add to cart.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Lấy thông tin sản phẩm được chọn
+                String phoneId = (String) tableModel.getValueAt(selectedRow, 0);
+                String phoneBrand = (String) tableModel.getValueAt(selectedRow, 1);
+                String phoneModel = (String) tableModel.getValueAt(selectedRow, 2);
+                String phonePrice = (String) tableModel.getValueAt(selectedRow, 3);
+
+                // Lấy số lượng hàng tồn kho dưới dạng chuỗi và chuyển đổi thành int
+                int stockQuantity;
+                try {
+                    stockQuantity = Integer.parseInt(tableModel.getValueAt(selectedRow, 4).toString());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Stock quantity is not a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Nhập số lượng sản phẩm
+                String quantityStr = JOptionPane.showInputDialog("Enter quantity:");
+                if (quantityStr == null || quantityStr.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Quantity is required.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(quantityStr);
+                    if (quantity > stockQuantity) {
+                        JOptionPane.showMessageDialog(null, "Not enough stock available.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Nhập mã giảm giá (nếu có)
+                String discountCode = JOptionPane.showInputDialog("Enter discount code (optional):");
+
+                // Ghi thông tin vào file CSV
+                saveOrderToCSV(phoneId, phoneBrand, phoneModel, phonePrice, quantity, discountCode);
+
+                // Cập nhật số lượng hàng tồn kho
+                updateStockQuantity(phoneId, stockQuantity - quantity);
+
                 JOptionPane.showMessageDialog(null, "You have successfully added the product to the cart.", "Cart", JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -98,8 +162,26 @@ public class View_Customer extends JFrame {
             }
         });
 
+        // Xử lý sự kiện lọc theo combo box
+        filterComboBox.addActionListener(e -> {
+            String selectedFilter = (String) filterComboBox.getSelectedItem();
+            ArrayList<Phones> filteredPhones = filterPhones(selectedFilter);
+            loadPhoneDataToTable(filteredPhones);
+        });
+
         // Đặt giao diện ra giữa màn hình
         setLocationRelativeTo(null);
+    }
+
+    private void updateStockQuantity(String phoneId, int newQuantity) {
+        String newQuantityStr = String.valueOf(newQuantity); // Chuyển đổi int sang String
+        for (Phones phone : phoneList) {
+            if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
+                phone.setStockQuantity(newQuantityStr); // Cập nhật số lượng trong danh sách dưới dạng chuỗi
+                break;
+            }
+        }
+        loadPhoneDataToTable(phoneList); // Cập nhật lại dữ liệu trong bảng
     }
 
     // Hàm load dữ liệu từ ArrayList<Phones> lên bảng
@@ -107,11 +189,11 @@ public class View_Customer extends JFrame {
         tableModel.setRowCount(0); // Xóa các hàng cũ
         for (Phones phone : phones) {
             Object[] rowData = {
-                    phone.getPhoneId(),
-                    phone.getBrand(),
-                    phone.getModel(),
-                    phone.getPrice(),
-                    phone.getStockQuantity()
+                phone.getPhoneId(),
+                phone.getBrand(),
+                phone.getModel(),
+                phone.getPrice(),
+                phone.getStockQuantity()
             };
             tableModel.addRow(rowData);
         }
@@ -119,7 +201,7 @@ public class View_Customer extends JFrame {
 
     // Hàm tìm kiếm điện thoại theo mã
     private ArrayList<Phones> searchPhoneById(String phoneId) {
-        if(phoneId.equals("")) {
+        if (phoneId.equals("")) {
             return phoneList;
         }
         ArrayList<Phones> result = new ArrayList<>();
@@ -131,6 +213,67 @@ public class View_Customer extends JFrame {
         return result;
     }
 
+    // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
+    private ArrayList<Phones> filterPhones(String filter) {
+        if (filter.equals("All")) {
+            return phoneList; // Trả về toàn bộ danh sách nếu chọn "All"
+        }
+        ArrayList<Phones> filteredPhones = new ArrayList<>();
+        for (Phones phone : phoneList) {
+            if (filter.startsWith("Brand: ")) {
+                String brand = filter.substring(7); // Lấy tên thương hiệu
+                if (phone.getBrand().equalsIgnoreCase(brand)) {
+                    filteredPhones.add(phone);
+                }
+            } else if (filter.equals("Price > 500")) {
+                try {
+                    // Chuyển đổi giá từ String sang double để so sánh
+                    double price = Double.parseDouble(phone.getPrice());
+                    if (price > 500) {
+                        filteredPhones.add(phone);
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua các sản phẩm có giá không hợp lệ
+                    System.out.println("Lỗi chuyển đổi giá của sản phẩm có ID: " + phone.getPhoneId());
+                }
+            }
+        }
+        return filteredPhones;
+    }
+
+    private void saveOrderToCSV(String phoneId, String brand, String model, String price, int quantity, String discountCode) {
+        // Tạo tên file từ email và tên khách hàng
+        String[] nameParts = customerName.split("_");
+        String email = nameParts.length > 0 ? nameParts[0] : "default_email";
+        String name = nameParts.length > 1 ? nameParts[1] : "default_name";
+        String fileName = "orderHistory/" + email + "_" + name + ".csv";
+
+        try (FileWriter writer = new FileWriter(fileName, true)) { // Chế độ append
+            // Lấy thời gian hiện tại
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+            // Ghi dữ liệu vào file
+            writer.append(phoneId).append(",")
+                    .append(brand).append(",")
+                    .append(model).append(",")
+                    .append(price).append(",")
+                    .append(String.valueOf(quantity)).append(",")
+                    .append(timeStamp).append(",");
+
+            // Thêm mã giảm giá nếu có
+            if (discountCode != null && !discountCode.trim().isEmpty()) {
+                writer.append(discountCode);
+            } else {
+                writer.append("No discount");
+            }
+
+            writer.append("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error saving order to CSV.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public static void display(String name) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -140,4 +283,5 @@ public class View_Customer extends JFrame {
             }
         });
     }
+
 }
