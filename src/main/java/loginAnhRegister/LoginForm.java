@@ -100,7 +100,7 @@ public class LoginForm extends JFrame {
                         if (role.equals("customer")) {
                             for (Customer x : Customers) {
                                 if (x.getUsername().equals(username) && x.getPassword().equals(password)) {
-                                    View_Customer.display(x.getName());
+                                    View_Customer.display(x.getName(), x.getEmail());
                                     dispose();
                                 }
                             }

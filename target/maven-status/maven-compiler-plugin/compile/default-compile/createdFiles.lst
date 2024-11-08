@@ -6,6 +6,7 @@ loginAnhRegister\View_Seller.class
 extensions\SendEmail$1.class
 loginAnhRegister\RegisterForm$1.class
 extensions\Check_OTP.class
+loginAnhRegister\View_Seller_Customer.class
 Model\Phones.class
 loginAnhRegister\View_Customer$1.class
 loginAnhRegister\View_Seller$1.class

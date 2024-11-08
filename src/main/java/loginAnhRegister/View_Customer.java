@@ -27,9 +27,11 @@ public class View_Customer extends JFrame {
 
     private ArrayList<Phones> phoneList;
     private String customerName;
+    private String customerEmail;
 
-    public View_Customer(String name) {
+    public View_Customer(String name, String email) {
         this.customerName = name;
+        this.customerEmail = email;
 
         // Thiết lập tiêu đề cho giao diện
         setTitle("Customer View - Phone Shopping");
@@ -181,6 +183,7 @@ public class View_Customer extends JFrame {
             }
         }
         loadPhoneDataToTable(phoneList); // Cập nhật lại dữ liệu trong bảng
+        CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv"); 
     }
 
     // Hàm load dữ liệu từ ArrayList<Phones> lên bảng
@@ -230,11 +233,9 @@ public class View_Customer extends JFrame {
     }
 
     private void saveOrderToCSV(String phoneId, String brand, String model, String price, int quantity, String discountCode) {
-        // Tạo tên file từ email và tên khách hàng
-        String[] nameParts = customerName.split("_");
-        String email = nameParts.length > 0 ? nameParts[0] : "default_email";
-        String name = nameParts.length > 1 ? nameParts[1] : "default_name";
-        String fileName = "orderHistory/" + email + "_" + name + ".csv";
+        // Tạo tên file từ email khách hàng
+        String email = customerEmail.replace("@gmail.com", "");
+        String fileName = "orderHistory/" + email + ".csv";
 
         try (FileWriter writer = new FileWriter(fileName, true)) { // Chế độ append
             // Lấy thời gian hiện tại
@@ -262,11 +263,11 @@ public class View_Customer extends JFrame {
         }
     }
 
-    public static void display(String name) {
+    public static void display(String name, String email) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                View_Customer view = new View_Customer(name);
+                View_Customer view = new View_Customer(name, email);
                 view.setVisible(true);
             }
         });
