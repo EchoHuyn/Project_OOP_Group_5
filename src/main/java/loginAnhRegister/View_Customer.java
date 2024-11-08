@@ -208,7 +208,7 @@ public class View_Customer extends JFrame {
         }
         ArrayList<Phones> result = new ArrayList<>();
         for (Phones phone : phoneList) {
-            if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
+            if (phone.getPhoneId().toLowerCase().contains(phoneId.toLowerCase())) {
                 result.add(phone);
             }
         }
