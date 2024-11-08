@@ -69,8 +69,7 @@ public class View_Customer extends JFrame {
         filterComboBox.addItem("All"); // Tùy chọn mặc định là "All"
         for (String brand : uniqueBrands) {
             filterComboBox.addItem("Brand: " + brand);
-        }
-        filterComboBox.addItem("Price > 500"); // Thêm tiêu chí lọc theo giá
+        }      
 
         // Tạo panel chứa các nút và ô tìm kiếm
         JPanel controlPanel = new JPanel();
@@ -225,18 +224,7 @@ public class View_Customer extends JFrame {
                 if (phone.getBrand().equalsIgnoreCase(brand)) {
                     filteredPhones.add(phone);
                 }
-            } else if (filter.equals("Price > 500")) {
-                try {
-                    // Chuyển đổi giá từ String sang double để so sánh
-                    double price = Double.parseDouble(phone.getPrice());
-                    if (price > 500) {
-                        filteredPhones.add(phone);
-                    }
-                } catch (NumberFormatException e) {
-                    // Bỏ qua các sản phẩm có giá không hợp lệ
-                    System.out.println("Lỗi chuyển đổi giá của sản phẩm có ID: " + phone.getPhoneId());
-                }
-            }
+            } 
         }
         return filteredPhones;
     }

@@ -24,106 +24,127 @@ public class RegisterForm extends JFrame {
 
     public RegisterForm() {
         setTitle("Register Form");
-        setSize(400, 450);
+        setSize(450, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(11, 2, 10, 10));
 
-        // Tên
-        add(new JLabel("Tên:"));
-        txtName = new JTextField();
-        add(txtName);
+        // Set layout and padding
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBackground(Color.WHITE); // Set background color
 
-        // Ngày tháng năm sinh
-        add(new JLabel("Ngày sinh:"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        JPanel birthPanel = new JPanel(new GridLayout(1, 3));
+        // Form fields
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(new JLabel("Tên:"), gbc);
+
+        gbc.gridx = 1;
+        txtName = new JTextField(15);
+        mainPanel.add(txtName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Ngày sinh:"), gbc);
+
+        JPanel birthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         comboDay = new JComboBox<>();
-        for (int i = 1; i <= 31; i++) {
-            comboDay.addItem(i);
-        }
+        for (int i = 1; i <= 31; i++) comboDay.addItem(i);
 
         comboMonth = new JComboBox<>();
-        for (int i = 1; i <= 12; i++) {
-            comboMonth.addItem(i);
-        }
+        for (int i = 1; i <= 12; i++) comboMonth.addItem(i);
 
         comboYear = new JComboBox<>();
-        for (int i = 2024; i >= 1900; i--) {
-            comboYear.addItem(i);
-        }
+        for (int i = 2024; i >= 1900; i--) comboYear.addItem(i);
 
         birthPanel.add(comboDay);
         birthPanel.add(comboMonth);
         birthPanel.add(comboYear);
-        add(birthPanel);
+        gbc.gridx = 1;
+        mainPanel.add(birthPanel, gbc);
 
-        // Giới tính
-        add(new JLabel("Giới tính:"));
-        comboGender = new JComboBox<>(new String[]{"Male", "Female", "Other"});
-        add(comboGender);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Giới tính:"), gbc);
 
-        // Email
-        add(new JLabel("Gmail:"));
+        gbc.gridx = 1;
+        comboGender = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
+        mainPanel.add(comboGender, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Gmail:"), gbc);
+
+        gbc.gridx = 1;
         txtEmail = new JTextField();
-        add(txtEmail);
+        mainPanel.add(txtEmail, gbc);
 
-        // Địa chỉ nhận hàng
-        add(new JLabel("Địa chỉ:"));
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Địa chỉ:"), gbc);
+
+        gbc.gridx = 1;
         txtAddress = new JTextField();
-        add(txtAddress);
+        mainPanel.add(txtAddress, gbc);
 
-        // Tài khoản đăng nhập
-        add(new JLabel("Tài khoản:"));
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Tài khoản:"), gbc);
+
+        gbc.gridx = 1;
         txtUsername = new JTextField();
-        add(txtUsername);
+        mainPanel.add(txtUsername, gbc);
 
-        // Mật khẩu
-        add(new JLabel("Mật khẩu:"));
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Mật khẩu:"), gbc);
+
+        gbc.gridx = 1;
         txtPassword = new JPasswordField();
-        add(txtPassword);
+        mainPanel.add(txtPassword, gbc);
 
-        // Nhập lại mật khẩu
-        add(new JLabel("Nhập lại mật khẩu:"));
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Nhập lại mật khẩu:"), gbc);
+
+        gbc.gridx = 1;
         txtPasswordConfirm = new JPasswordField();
-        add(txtPasswordConfirm);
+        mainPanel.add(txtPasswordConfirm, gbc);
 
-        // Nút đăng kí
-        btnRegister = new JButton("Đăng kí");
-        add(btnRegister);
+        // Buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        btnRegister = new JButton("Xác nhận đăng kí");
+        btnRegister.setBackground(new Color(0, 123, 255));
+        btnRegister.setForeground(Color.WHITE);
+        buttonPanel.add(btnRegister);
 
-        // Add "Back to Login" button
-        JButton btnBackToLogin = new JButton("Back to Login");
-        add(btnBackToLogin);
+        JButton btnBackToLogin = new JButton("Quay lại đăng nhập");
+        btnBackToLogin.setBackground(Color.RED);
+        btnBackToLogin.setForeground(Color.WHITE);
+        buttonPanel.add(btnBackToLogin);
 
-        btnBackToLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int response = JOptionPane.showConfirmDialog(
-                        RegisterForm.this,
-                        "Bạn có chắc chắn muốn quay lại khung đăng nhập?",
-                        "Xác nhận",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                );
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        mainPanel.add(buttonPanel, gbc);
 
-                if (response == JOptionPane.YES_OPTION) {
-                    LoginForm.display(); // Assumes LoginForm has a display method to show the login form
-                    dispose();
-                }
-            }
-        });
+        // Add main panel to frame
+        add(mainPanel);
 
+        // Register button action
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (validateForm()) {
                     Email = txtEmail.getText();
                     OTP = Check_OTP.generateOTP();
-                    SendEmail.sendEmail_OTP(OTP, Email); // Gửi OTP qua email
+                    SendEmail.sendEmail_OTP(OTP, Email); // Send OTP via email
                     String inputOtp = JOptionPane.showInputDialog("Nhập mã OTP đã được gửi:");
 
-                    // Kiểm tra mã OTP nhập vào
                     if (inputOtp != null && inputOtp.equals(OTP)) {
                         saveAccountToFile(
                                 txtName.getText(),
@@ -134,10 +155,30 @@ public class RegisterForm extends JFrame {
                                 new String(txtPassword.getPassword()),
                                 txtEmail.getText()
                         );
+                        JOptionPane.showMessageDialog(RegisterForm.this, "Đăng kí thành công!");
+                        LoginForm.display();
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Mã OTP không chính xác, vui lòng thử lại!");
                     }
+                }
+            }
+        });
+
+        // Back to login button action
+        btnBackToLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(
+                        RegisterForm.this,
+                        "Bạn có chắc chắn muốn quay lại khung đăng nhập?",
+                        "Xác nhận",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (response == JOptionPane.YES_OPTION) {
+                    LoginForm.display();
+                    dispose();
                 }
             }
         });
@@ -157,6 +198,16 @@ public class RegisterForm extends JFrame {
         String password = new String(txtPassword.getPassword());
         String confirmPassword = new String(txtPasswordConfirm.getPassword());
 
+        // Kiểm tra ngày sinh hợp lệ
+        int day = (int) comboDay.getSelectedItem();
+        int month = (int) comboMonth.getSelectedItem();
+        int year = (int) comboYear.getSelectedItem();
+
+        if (!isValidDate(day, month, year)) {
+            JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ, vui lòng nhập lại!");
+            return false;
+        }
+
         // Kiểm tra email đuôi @gmail.com
         if (!email.endsWith("@gmail.com")) {
             JOptionPane.showMessageDialog(this, "Email phải có đuôi @gmail.com");
@@ -175,8 +226,29 @@ public class RegisterForm extends JFrame {
             return false;
         }
 
+        // Chuẩn hóa họ và tên
+        txtName.setText(formatName(txtName.getText()));
+
         return true;
     }
+
+    //Hàm chuẩn hóa tên
+    private String formatName(String name) {
+        name = name.trim().replaceAll("\\s+", " "); // Loại bỏ khoảng trắng thừa
+        String[] words = name.split(" ");
+        StringBuilder formattedName = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                formattedName.append(Character.toUpperCase(word.charAt(0))) // Viết hoa chữ cái đầu
+                        .append(word.substring(1).toLowerCase()) // Viết thường các chữ cái còn lại
+                        .append(" ");
+            }
+        }
+
+        return formattedName.toString().trim();
+    }
+
 
     // Hàm kiểm tra xem email có tồn tại trong file account.csv không
     private boolean isEmailExist(String email) {
@@ -192,6 +264,19 @@ public class RegisterForm extends JFrame {
             ex.printStackTrace();
         }
         return false;
+    }
+
+    //Hàm kiểm tra ngày tháng năm
+    private boolean isValidDate(int day, int month, int year) {
+        // Số ngày tối đa cho từng tháng
+        int[] daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+        // Kiểm tra năm nhuận
+        if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+            daysInMonth[1] = 29; // Tháng 2 có 29 ngày trong năm nhuận
+        }
+
+        return day > 0 && day <= daysInMonth[month - 1];
     }
 
     // Hàm lưu tài khoản vào file accountCustomers.csv
