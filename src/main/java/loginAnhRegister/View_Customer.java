@@ -8,13 +8,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class View_Customer extends JFrame {
 
@@ -23,7 +18,9 @@ public class View_Customer extends JFrame {
     private JTextField searchField;
     private JButton addToCartButton;
     private JButton searchButton;
-    private JButton backButton; // Thêm nút back
+    private JButton backButton;
+    private JButton refreshButton;
+    private JButton checkCartButton; // Nút kiểm tra giỏ hàng
     private JComboBox<String> filterComboBox;
 
     private ArrayList<Phones> phoneList;
@@ -32,18 +29,21 @@ public class View_Customer extends JFrame {
 
     public View_Customer(String name, String email) {
         this.customerName = name;
-        this.customerEmail = email;       
+        this.customerEmail = email;
 
         // Thiết lập tiêu đề cho giao diện
         setTitle("Customer View - Phone Shopping");
-        setSize(800, 600);
+        setSize(1600, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Tạo JLabel "Hi, [name]"
+        // Tạo JLabel "Hi, [name]" với phong cách đẹp hơn
         JLabel welcomeLabel = new JLabel("Hi, " + name);
-        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 24));  // Font nổi bật
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        welcomeLabel.setForeground(Color.BLUE);  // Màu chữ nổi bật
+        welcomeLabel.setForeground(new Color(25, 118, 210));
+
+        // Thiết lập màu nền
+        getContentPane().setBackground(new Color(242, 242, 242));
 
         // Load dữ liệu từ CSV
         phoneList = CsvFileHandler.readPhonesFromCSV("phones.csv");
@@ -52,13 +52,42 @@ public class View_Customer extends JFrame {
         String[] columnNames = {"Phone ID", "Brand", "Model", "Price", "Stock Quantity"};
         tableModel = new DefaultTableModel(columnNames, 0);
         phoneTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(phoneTable);
-        loadPhoneDataToTable(phoneList); // Load dữ liệu vào bảng
+        phoneTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        phoneTable.setRowHeight(25);
+        phoneTable.setGridColor(Color.LIGHT_GRAY);
+        phoneTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        phoneTable.getTableHeader().setBackground(new Color(220, 220, 220));
+        loadPhoneDataToTable(phoneList);
 
-        // Tạo các nút và ô tìm kiếm
+        JScrollPane scrollPane = new JScrollPane(phoneTable);
+
+        // Tạo các nút và ô tìm kiếm với thiết kế đẹp hơn
         addToCartButton = new JButton("Add to Cart");
+        addToCartButton.setFont(new Font("Arial", Font.BOLD, 14));
+        addToCartButton.setBackground(new Color(76, 175, 80));
+        addToCartButton.setForeground(Color.WHITE);
+
         searchButton = new JButton("Search");
-        backButton = new JButton("Back"); // Nút Back
+        searchButton.setFont(new Font("Arial", Font.BOLD, 14));
+        searchButton.setBackground(new Color(33, 150, 243));
+        searchButton.setForeground(Color.WHITE);
+
+        backButton = new JButton("Exit to Login");
+        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.setBackground(new Color(189, 189, 189));
+        backButton.setForeground(Color.BLACK);
+
+        checkCartButton = new JButton("Check Cart"); // Nút kiểm tra giỏ hàng
+        checkCartButton.setFont(new Font("Arial", Font.BOLD, 14));
+        checkCartButton.setBackground(new Color(255, 152, 0));
+        checkCartButton.setForeground(Color.WHITE);
+
+        // Tạo các nút "Refresh" và "Exit to Login"
+        refreshButton = new JButton("Refresh");
+        refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
+        refreshButton.setBackground(new Color(70, 130, 180));
+        refreshButton.setForeground(Color.WHITE);
+
         searchField = new JTextField(15);
 
         // Lấy danh sách thương hiệu duy nhất từ phoneList
@@ -69,26 +98,39 @@ public class View_Customer extends JFrame {
 
         // Tạo combo box lọc và thêm các thương hiệu duy nhất
         filterComboBox = new JComboBox<>();
+        filterComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
         filterComboBox.addItem("All"); // Tùy chọn mặc định là "All"
         for (String brand : uniqueBrands) {
             filterComboBox.addItem("Brand: " + brand);
-        }      
+        }
 
         // Tạo panel chứa các nút và ô tìm kiếm
         JPanel controlPanel = new JPanel();
+        controlPanel.setBackground(new Color(242, 242, 242));
         controlPanel.add(new JLabel("Search by Phone ID:"));
         controlPanel.add(searchField);
         controlPanel.add(searchButton);
         controlPanel.add(filterComboBox);
         controlPanel.add(addToCartButton);
+        controlPanel.add(checkCartButton); // Thêm nút Check Cart
         controlPanel.add(backButton); // Thêm nút Back
+        controlPanel.add(refreshButton); // Thêm nút Refresh
 
         // Thêm các thành phần vào JFrame
         setLayout(new BorderLayout());
-        add(welcomeLabel, BorderLayout.NORTH); // Thêm JLabel "Hi, [name]" lên đầu
+        add(welcomeLabel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
 
+        // Xử lý sự kiện cho nút Tìm kiếm
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                display(customerName, customerEmail);
+            }
+        });
+        
         // Xử lý sự kiện cho nút Tìm kiếm
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -99,6 +141,7 @@ public class View_Customer extends JFrame {
             }
         });
 
+        // Xử lý sự kiện cho nút Add to Cart
         addToCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,7 +157,7 @@ public class View_Customer extends JFrame {
                 String phoneModel = (String) tableModel.getValueAt(selectedRow, 2);
                 String phonePrice = (String) tableModel.getValueAt(selectedRow, 3);
 
-                // Lấy số lượng hàng tồn kho dưới dạng chuỗi và chuyển đổi thành int
+                // Lấy số lượng hàng tồn kho
                 int stockQuantity;
                 try {
                     stockQuantity = Integer.parseInt(tableModel.getValueAt(selectedRow, 4).toString());
@@ -141,24 +184,24 @@ public class View_Customer extends JFrame {
                     JOptionPane.showMessageDialog(null, "Invalid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
-                String quantityString = Integer.toString(quantity);;
+
+                String quantityString = Integer.toString(quantity);
 
                 // Nhập mã giảm giá (nếu có)
                 String discountCode = JOptionPane.showInputDialog("Enter discount code (optional):");
                 if (discountCode == null || discountCode.trim().isEmpty()) {
-                    discountCode += "No discount";
+                    discountCode = "No discount";
                 }
-                
-                //Lấy tình trạng đơn hàng hiện tại
+
+                // Lấy tình trạng đơn hàng hiện tại
                 String status = "Pending";
 
-                //Lấy thời gian hiện tại
+                // Lấy thời gian hiện tại
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                
+
                 Phones y = new Phones(phoneId, phoneBrand, phoneModel, phonePrice, quantityString);
                 Order x = new Order(customerEmail, y, timeStamp, discountCode, status);
-                
+
                 // Ghi thông tin vào file CSV
                 CsvFileHandler.writeOrderToCSV(x);
 
@@ -187,18 +230,157 @@ public class View_Customer extends JFrame {
 
         // Đặt giao diện ra giữa màn hình
         setLocationRelativeTo(null);
+
+        // Xử lý sự kiện cho nút Check Cart
+        checkCartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showCart();
+            }
+        });
+
+        // Đặt giao diện ra giữa màn hình
+        setLocationRelativeTo(null);
     }
 
     private void updateStockQuantity(String phoneId, int newQuantity) {
-        String newQuantityStr = String.valueOf(newQuantity); // Chuyển đổi int sang String
+        String newQuantityStr = String.valueOf(newQuantity);
         for (Phones phone : phoneList) {
             if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
-                phone.setStockQuantity(newQuantityStr); // Cập nhật số lượng trong danh sách dưới dạng chuỗi
+                phone.setStockQuantity(newQuantityStr);
                 break;
             }
         }
-        loadPhoneDataToTable(phoneList); // Cập nhật lại dữ liệu trong bảng
-        CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv"); 
+        loadPhoneDataToTable(phoneList);
+        CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
+    }
+
+    // Hàm tìm kiếm điện thoại theo mã
+    private ArrayList<Phones> searchPhoneById(String phoneId) {
+        if (phoneId.equals("")) {
+            return phoneList;
+        }
+        ArrayList<Phones> result = new ArrayList<>();
+        for (Phones phone : phoneList) {
+            if (phone.getPhoneId().toLowerCase().contains(phoneId.toLowerCase())) {
+                result.add(phone);
+            }
+        }
+        return result;
+    }
+
+    // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
+    private ArrayList<Phones> filterPhones(String filter) {
+        if (filter.equals("All")) {
+            return phoneList;
+        }
+        ArrayList<Phones> filteredPhones = new ArrayList<>();
+        for (Phones phone : phoneList) {
+            if (filter.startsWith("Brand: ")) {
+                String brand = filter.substring(7);
+                if (phone.getBrand().equalsIgnoreCase(brand)) {
+                    filteredPhones.add(phone);
+                }
+            }
+        }
+        return filteredPhones;
+    }
+
+    // Phương thức hiển thị giỏ hàng với checkbox để xác nhận các đơn hàng muốn mua
+    private void showCart() {
+        ArrayList<Order> allOrders = CsvFileHandler.readOrdersFromCSV();
+        ArrayList<Order> customerOrders = new ArrayList<>();
+
+        System.out.println("Day la: " + customerEmail);
+
+        // Lọc các đơn hàng của khách hàng hiện tại
+        for (Order order : allOrders) {
+            if (order.getEmail().equals(customerEmail.replace("@gmail.com", ""))) {
+                customerOrders.add(order);
+            }
+        }
+
+        // Tạo cửa sổ giỏ hàng
+        JFrame cartFrame = new JFrame("Your Cart");
+        cartFrame.setSize(600, 400);
+        cartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+// Tạo bảng không có cột Select
+        String[] columnNames = {"Phone ID", "Brand", "Model", "Price", "Quantity", "Status"};
+        DefaultTableModel cartTableModel = new DefaultTableModel(columnNames, 0);
+
+        JTable cartTable = new JTable(cartTableModel);
+        cartTable.setRowHeight(25);
+
+// Load dữ liệu đơn hàng vào bảng
+        for (Order order : customerOrders) {
+            Object[] row = {
+                order.getPhones().getPhoneId(),
+                order.getPhones().getBrand(),
+                order.getPhones().getModel(),
+                order.getPhones().getPrice(),
+                order.getPhones().getStockQuantity(),
+                order.getStatus()
+            };
+            cartTableModel.addRow(row);
+        }
+
+        JScrollPane cartScrollPane = new JScrollPane(cartTable);
+
+// Nút xóa sản phẩm khỏi giỏ hàng
+        JButton deleteSelectedButton = new JButton("Delete Selected Item");
+        deleteSelectedButton.setFont(new Font("Arial", Font.BOLD, 14));
+        deleteSelectedButton.setBackground(new Color(255, 0, 0));
+        deleteSelectedButton.setForeground(Color.WHITE);
+
+        deleteSelectedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = cartTable.getSelectedRow();
+
+                // Kiểm tra nếu có một dòng được chọn
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(cartFrame, "Please select an item to delete.");
+                    return;
+                }
+
+                // Nếu có một sản phẩm được chọn, tiến hành xóa
+                Order orderToDelete = customerOrders.get(selectedRow);
+                allOrders.remove(orderToDelete); // Xóa sản phẩm khỏi allOrders
+
+                // Lấy thông tin sản phẩm từ đơn hàng vừa xóa
+                Phones phoneInOrder = orderToDelete.getPhones();
+                String phoneId = phoneInOrder.getPhoneId();
+                int quantityToAddBack = Integer.parseInt(phoneInOrder.getStockQuantity());
+
+                // Tìm sản phẩm trong danh sách `phoneList` và cập nhật lại số lượng tồn kho
+                for (Phones phone : phoneList) {
+                    if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
+                        int currentStock = Integer.parseInt(phone.getStockQuantity());
+                        phone.setStockQuantity(String.valueOf(currentStock + quantityToAddBack));
+                        break;
+                    }
+                }
+
+                // Ghi đè danh sách đơn hàng còn lại vào file "unconfirmOrders.csv"
+                CsvFileHandler.writeOrdersToUnconfirmOrders(allOrders);
+
+                // Cập nhật file "Phones.csv" với số lượng tồn kho mới
+                CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
+
+                JOptionPane.showMessageDialog(cartFrame, "Selected item has been deleted from your cart and stock quantity has been updated.");
+                cartFrame.dispose(); // Đóng cửa sổ giỏ hàng sau khi xóa
+            }
+        });
+
+// Thêm các thành phần vào cửa sổ giỏ hàng
+        cartFrame.setLayout(new BorderLayout());
+        cartFrame.add(cartScrollPane, BorderLayout.CENTER);
+        cartFrame.add(deleteSelectedButton, BorderLayout.SOUTH);
+
+// Hiển thị cửa sổ giỏ hàng
+        cartFrame.setLocationRelativeTo(this);
+        cartFrame.setVisible(true);
     }
 
     // Hàm load dữ liệu từ ArrayList<Phones> lên bảng
@@ -216,45 +398,10 @@ public class View_Customer extends JFrame {
         }
     }
 
-    // Hàm tìm kiếm điện thoại theo mã
-    private ArrayList<Phones> searchPhoneById(String phoneId) {
-        if (phoneId.equals("")) {
-            return phoneList;
-        }
-        ArrayList<Phones> result = new ArrayList<>();
-        for (Phones phone : phoneList) {
-            if (phone.getPhoneId().toLowerCase().contains(phoneId.toLowerCase())) {
-                result.add(phone);
-            }
-        }
-        return result;
-    }
-                                                                                                                                                                                                                                                                                         
-    // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
-    private ArrayList<Phones> filterPhones(String filter) {
-        if (filter.equals("All")) {
-            return phoneList; // Trả về toàn bộ danh sách nếu chọn "All"
-        }
-        ArrayList<Phones> filteredPhones = new ArrayList<>();
-        for (Phones phone : phoneList) {
-            if (filter.startsWith("Brand: ")) {
-                String brand = filter.substring(7); // Lấy tên thương hiệu
-                if (phone.getBrand().equalsIgnoreCase(brand)) {
-                    filteredPhones.add(phone);
-                }
-            } 
-        }
-        return filteredPhones;
-    }
-
     public static void display(String name, String email) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                View_Customer view = new View_Customer(name, email);
-                view.setVisible(true);
-            }
+        SwingUtilities.invokeLater(() -> {
+            View_Customer view = new View_Customer(name, email);
+            view.setVisible(true);
         });
     }
-
 }
