@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
-import loginAnhRegister.LoginForm;
+import loginAndRegister.LoginForm;
 
 public class View_Seller extends JFrame {
 

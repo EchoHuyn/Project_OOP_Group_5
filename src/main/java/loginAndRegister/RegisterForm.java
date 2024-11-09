@@ -1,7 +1,8 @@
-package loginAnhRegister;
+package loginAndRegister;
 
 import extensions.SendEmail;
 import extensions.Check_OTP;
+import extensions.Exception_Handling;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -193,7 +194,7 @@ public class RegisterForm extends JFrame {
         int month = (int) comboMonth.getSelectedItem();
         int year = (int) comboYear.getSelectedItem();
 
-        if (!isValidDate(day, month, year)) {
+        if (!Exception_Handling.isValidDate(day, month, year)) {
             JOptionPane.showMessageDialog(this, "Invalid date of birth, please enter again!");
             return false;
         }
@@ -211,63 +212,17 @@ public class RegisterForm extends JFrame {
         }
 
         // Check if email already exists in CSV file
-        if (isEmailExist(email)) {
+        if (Exception_Handling.isEmailExist(email)) {
             JOptionPane.showMessageDialog(this, "This email is already in use. Please choose another email.");
             return false;
         }
 
         // Standardize name and address
-        txtName.setText(formatName(txtName.getText()));
-        txtAddress.setText(formatName(txtAddress.getText()));
+        txtName.setText(Exception_Handling.formatName(txtName.getText()));
+        txtAddress.setText(Exception_Handling.formatName(txtAddress.getText()));
 
         return true;
-    }
-
-    // Method to standardize name
-    private String formatName(String name) {
-        name = name.trim().replaceAll("\\s+", " "); // Remove extra spaces
-        String[] words = name.split(" ");
-        StringBuilder formattedName = new StringBuilder();
-
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                formattedName.append(Character.toUpperCase(word.charAt(0))) // Capitalize first letter
-                        .append(word.substring(1).toLowerCase()) // Lowercase remaining letters
-                        .append(" ");
-            }
-        }
-
-        return formattedName.toString().trim();
-    }
-
-    // Method to check if email exists in accountCustomers.csv
-    private boolean isEmailExist(String email) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("accountCustomers.csv"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] accountDetails = line.split(",");
-                if (accountDetails.length > 6 && accountDetails[6].equalsIgnoreCase(email)) { // Adjust index to 6 for email column
-                    return true;
-                }
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
-    // Method to validate date
-    private boolean isValidDate(int day, int month, int year) {
-        // Max days for each month
-        int[] daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-        // Check leap year
-        if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
-            daysInMonth[1] = 29; // February has 29 days in leap years
-        }
-
-        return day > 0 && day <= daysInMonth[month - 1];
-    }
+    }   
 
     // Method to save account to accountCustomers.csv
     private void saveAccountToFile(String name, String birthDate, String gender, String address, String username, String password, String email) {

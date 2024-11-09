@@ -1,4 +1,4 @@
-package loginAnhRegister;
+package loginAndRegister;
 
 public class Main {
 

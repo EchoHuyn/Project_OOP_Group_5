@@ -1,4 +1,4 @@
-package loginAnhRegister;
+package loginAndRegister;
 
 import Seller.View_Seller;
 import Model.Customer;
@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import loginAnhRegister.View_Customer;
 
 public class LoginForm extends JFrame {
 
