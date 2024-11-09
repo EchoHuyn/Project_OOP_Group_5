@@ -4,18 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class View_Seller extends JFrame {
 
     private JButton btnCustomerList;
     private JButton btnProductList;
-    private JButton btnUnconfirmedOrders; // Nút mới cho đơn hàng chưa xác nhận
+    private JButton btnUnconfirmedOrders;
     private JButton btnBackToLogin;
+    private JButton btnCreateDiscount; // Nút tạo mã giảm giá
 
     public View_Seller() {
         setTitle("Giao diện người bán");
-        setSize(500, 400);
+        setSize(500, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -32,7 +35,7 @@ public class View_Seller extends JFrame {
         mainPanel.add(lblTitle, BorderLayout.NORTH);
 
         // Panel nút chức năng
-        JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(5, 1, 10, 10));
         buttonPanel.setBackground(new Color(45, 52, 54));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 70, 10, 70));
 
@@ -40,8 +43,7 @@ public class View_Seller extends JFrame {
         btnCustomerList = new JButton("Danh sách người mua hàng");
         styleButton(btnCustomerList);
         buttonPanel.add(btnCustomerList);
-        
-        // Mở danh sách người mua hàng
+
         btnCustomerList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,13 +68,24 @@ public class View_Seller extends JFrame {
         btnUnconfirmedOrders = new JButton("Các đơn hàng chưa xác nhận");
         styleButton(btnUnconfirmedOrders);
         buttonPanel.add(btnUnconfirmedOrders);
-        
-         // Mở danh sách đơn hàng chưa xác nhận
+
         btnUnconfirmedOrders.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 View_Seller_Order.display();
                 dispose();
+            }
+        });
+
+        // Nút Tạo mã giảm giá
+        btnCreateDiscount = new JButton("Tạo mã giảm giá");
+        styleButton(btnCreateDiscount);
+        buttonPanel.add(btnCreateDiscount);
+
+        btnCreateDiscount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createDiscountCode();
             }
         });
 
@@ -85,7 +98,6 @@ public class View_Seller extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
         add(mainPanel);
 
-        // Xử lý sự kiện nút Quay lại
         btnBackToLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -105,7 +117,6 @@ public class View_Seller extends JFrame {
         });
     }
 
-    // Phương thức định dạng chung cho các nút
     private void styleButton(JButton button) {
         button.setFont(new Font("Arial", Font.PLAIN, 18));
         button.setBackground(new Color(0, 153, 255));
@@ -114,100 +125,37 @@ public class View_Seller extends JFrame {
         button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
     }
 
+    private void createDiscountCode() {
+        JTextField discountCodeField = new JTextField();
+        JTextField discountAmountField = new JTextField();
+
+        Object[] message = {
+            "Mã giảm giá:", discountCodeField,
+            "Mức giảm (VND):", discountAmountField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Tạo mã giảm giá", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String discountCode = discountCodeField.getText();
+            String discountAmount = discountAmountField.getText();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("DiscountCode.csv", true))) {
+                writer.write(discountCode + "," + discountAmount);
+                writer.newLine();
+                JOptionPane.showMessageDialog(this, "Mã giảm giá đã được thêm thành công!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi lưu mã giảm giá", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     public static void display() {
         SwingUtilities.invokeLater(() -> {
             new View_Seller().setVisible(true);
         });
     }
     
-    public void addPhoneQuantity(String phoneId, int quantity) {
-        File inputFile = new File("phones.csv");
-        File tempFile = new File("phones_temp.csv");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String header = reader.readLine(); // Đọc dòng đầu tiên (nhãn cột)
-            writer.write(header + System.lineSeparator());
-
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                if (data[0].equals(phoneId)) {
-                    int currentStock = Integer.parseInt(data[4]);
-                    data[4] = String.valueOf(currentStock + quantity);
-                    currentLine = String.join(",", data);
-                }
-                writer.write(currentLine + System.lineSeparator());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Delete the original file
-        if (!inputFile.delete()) {
-            System.out.println("Could not delete file");
-            return;
-        }
-
-        // Rename the new file to the filename the original file had.
-        if (!tempFile.renameTo(inputFile)) {
-            System.out.println("Could not rename file");
-        }
-    }
-    
-    public void confirmOrder(String email, String phoneId, String brand, String model, double price, int quantity, String timeStamp, String discountCode) {
-        // Tạo tên file từ email
-        String fileName = email.replace("@gmail.com", "") + ".txt";
-        File orderFile = new File("orderHistory/" + fileName);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(orderFile, true))) {
-            // Ghi dữ liệu vào file
-            writer.write(phoneId + "," + brand + "," + model + "," + price + "," + quantity + "," + timeStamp + "," + discountCode);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void removeOrder(String email, String phoneId, String brand, String model, double price, int quantity, String timeStamp, String discountCode) {
-        File inputFile = new File("unconfirmOrder.csv");
-        File tempFile = new File("unconfirmOrder_temp.csv");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                String[] data = currentLine.split(",");
-                if (data.length == 8 &&
-                    data[0].equals(email) &&
-                    data[1].equals(phoneId) &&
-                    data[2].equals(brand) &&
-                    data[3].equals(model) &&
-                    Double.parseDouble(data[4]) == price &&
-                    Integer.parseInt(data[5]) == quantity &&
-                    data[6].equals(timeStamp) &&
-                    data[7].equals(discountCode)) {
-                    continue; // Skip this line
-                }
-                writer.write(currentLine + System.lineSeparator());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Delete the original file
-        if (!inputFile.delete()) {
-            System.out.println("Could not delete file");
-            return;
-        }
-
-        // Rename the new file to the filename the original file had.
-        if (!tempFile.renameTo(inputFile)) {
-            System.out.println("Could not rename file");
-        }
+    public static void main(String[] args) {
+        display();
     }
 }
