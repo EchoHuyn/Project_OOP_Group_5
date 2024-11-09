@@ -229,7 +229,7 @@ public class View_Seller_Order extends JFrame {
     }
 
     // Phương thức chính
-    public static void main(String[] args) {
+    public static void display() {
         ArrayList<Order> orders = CsvFileHandler.readOrdersFromCSV(); // Đọc dữ liệu từ file CSV
         display(orders); // Hiển thị giao diện chính
     }

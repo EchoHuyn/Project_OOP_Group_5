@@ -40,6 +40,16 @@ public class View_Seller extends JFrame {
         btnCustomerList = new JButton("Danh sách người mua hàng");
         styleButton(btnCustomerList);
         buttonPanel.add(btnCustomerList);
+        
+        // Mở danh sách người mua hàng
+        btnCustomerList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                View_Seller_Customer.display();
+                dispose();
+            }
+        });
+
 
         // Nút Danh sách sản phẩm
         btnProductList = new JButton("Danh sách sản phẩm");
@@ -50,6 +60,16 @@ public class View_Seller extends JFrame {
         btnUnconfirmedOrders = new JButton("Các đơn hàng chưa xác nhận");
         styleButton(btnUnconfirmedOrders);
         buttonPanel.add(btnUnconfirmedOrders);
+        
+         // Mở danh sách đơn hàng chưa xác nhận
+        btnUnconfirmedOrders.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                View_Seller_Order.display();
+                dispose();
+            }
+        });
+
 
         // Nút Quay lại đăng nhập
         btnBackToLogin = new JButton("Quay lại");

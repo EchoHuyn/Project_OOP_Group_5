@@ -191,7 +191,7 @@ public class View_Seller_Customer extends JFrame {
 
     private static ArrayList<Customer> customers;
 
-    public static void main(String[] args) {
+    public static void display() {
         customers = CsvFileHandler.readCustomersFromCSV("accountCustomers.csv");
 
         // Hiển thị giao diện
