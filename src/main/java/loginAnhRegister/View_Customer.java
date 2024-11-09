@@ -134,7 +134,7 @@ public class View_Customer extends JFrame {
                 display(customerName, customerEmail);
             }
         });
-        
+
         // Xử lý sự kiện cho nút Tìm kiếm
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -146,7 +146,7 @@ public class View_Customer extends JFrame {
         });
 
         // Xử lý sự kiện cho nút Add to Cart
-        // Xử lý sự kiện cho nút Add to Cart
+        // Action listener for Add to Cart button
         addToCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -156,7 +156,7 @@ public class View_Customer extends JFrame {
                     return;
                 }
 
-                // Lấy thông tin sản phẩm được chọn
+                // Get selected phone information
                 String phoneId = (String) tableModel.getValueAt(selectedRow, 0);
                 String phoneBrand = (String) tableModel.getValueAt(selectedRow, 1);
                 String phoneModel = (String) tableModel.getValueAt(selectedRow, 2);
@@ -169,7 +169,6 @@ public class View_Customer extends JFrame {
                     return;
                 }
 
-                // Lấy số lượng hàng tồn kho
                 int stockQuantity;
                 try {
                     stockQuantity = Integer.parseInt(tableModel.getValueAt(selectedRow, 4).toString());
@@ -178,7 +177,7 @@ public class View_Customer extends JFrame {
                     return;
                 }
 
-                // Nhập số lượng sản phẩm
+                // Prompt user to enter quantity
                 String quantityStr = JOptionPane.showInputDialog("Enter quantity:");
                 if (quantityStr == null || quantityStr.trim().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Quantity is required.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -188,6 +187,10 @@ public class View_Customer extends JFrame {
                 int quantity;
                 try {
                     quantity = Integer.parseInt(quantityStr);
+                    if (quantity <= 0) {  // Check for quantity > 0
+                        JOptionPane.showMessageDialog(null, "Quantity must be greater than 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     if (quantity > stockQuantity) {
                         JOptionPane.showMessageDialog(null, "Not enough stock available.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
@@ -197,10 +200,10 @@ public class View_Customer extends JFrame {
                     return;
                 }
 
-                // Tính tổng giá trước khi giảm giá
+                // Calculate total price before discount
                 double totalPrice = phonePrice * quantity;
 
-                // Nhập mã giảm giá (nếu có)
+                // Discount code input (optional)
                 String discountCode = JOptionPane.showInputDialog("Enter discount code (optional):");
                 if (discountCode != null && !discountCode.trim().isEmpty()) {
                     try (BufferedReader br = new BufferedReader(new FileReader("DiscountCode.csv"))) {
@@ -234,7 +237,7 @@ public class View_Customer extends JFrame {
                     }
                 }
 
-                // Ghi thông tin vào giỏ hàng sau khi áp dụng giảm giá
+                // Add to cart after discount application
                 Phones phone = new Phones(phoneId, phoneBrand, phoneModel, String.valueOf(totalPrice), String.valueOf(quantity));
                 Order order = new Order(customerEmail, phone, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), discountCode, "Pending");
 
@@ -307,7 +310,7 @@ public class View_Customer extends JFrame {
 
     // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
     private ArrayList<Phones> filterPhones(String filter) {
-        if (filter.equals("All")) {
+        if (filter.equals("All Brand")) {
             return phoneList;
         }
         ArrayList<Phones> filteredPhones = new ArrayList<>();
