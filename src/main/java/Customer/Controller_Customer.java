@@ -31,4 +31,33 @@ public class Controller_Customer {
             tableModel.addRow(rowData);
         }
     }
+    
+    // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
+    public static ArrayList<Phones> filterPhones(String filter, ArrayList<Phones> phoneList) {
+        if (filter.equals("All Brand")) {
+            return phoneList;
+        }
+        ArrayList<Phones> filteredPhones = new ArrayList<>();
+        for (Phones phone : phoneList) {
+            if (filter.startsWith("Brand: ")) {
+                String brand = filter.substring(7);
+                if (phone.getBrand().equalsIgnoreCase(brand)) {
+                    filteredPhones.add(phone);
+                }
+            }
+        }
+        return filteredPhones;
+    }
+    
+    public static void updateStockQuantity(String phoneId, int newQuantity, ArrayList<Phones> phoneList, DefaultTableModel tableModel) {
+        String newQuantityStr = String.valueOf(newQuantity);
+        for (Phones phone : phoneList) {
+            if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
+                phone.setStockQuantity(newQuantityStr);
+                break;
+            }
+        }
+        Controller_Customer.loadPhoneDataToTable(tableModel, phoneList);
+        CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
+    }
 }

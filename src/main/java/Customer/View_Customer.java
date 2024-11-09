@@ -243,7 +243,7 @@ public class View_Customer extends JFrame {
                 Order order = new Order(customerEmail, phone, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), discountCode, "Pending");
 
                 CsvFileHandler.writeOrderToCSV(order);
-                updateStockQuantity(phoneId, stockQuantity - quantity);
+                Controller_Customer.updateStockQuantity(phoneId, stockQuantity - quantity, phoneList, tableModel);
 
                 JOptionPane.showMessageDialog(null, "You have successfully added the product to the cart.", "Cart", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -264,7 +264,7 @@ public class View_Customer extends JFrame {
         // Xử lý sự kiện lọc theo combo box
         filterComboBox.addActionListener(e -> {
             String selectedFilter = (String) filterComboBox.getSelectedItem();
-            ArrayList<Phones> filteredPhones = filterPhones(selectedFilter);
+            ArrayList<Phones> filteredPhones = Controller_Customer.filterPhones(selectedFilter, phoneList);
             Controller_Customer.loadPhoneDataToTable(tableModel, filteredPhones);
         });
 
@@ -281,19 +281,7 @@ public class View_Customer extends JFrame {
 
         // Đặt giao diện ra giữa màn hình
         setLocationRelativeTo(null);
-    }
-
-    private void updateStockQuantity(String phoneId, int newQuantity) {
-        String newQuantityStr = String.valueOf(newQuantity);
-        for (Phones phone : phoneList) {
-            if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
-                phone.setStockQuantity(newQuantityStr);
-                break;
-            }
-        }
-        Controller_Customer.loadPhoneDataToTable(tableModel, phoneList);
-        CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
-    }
+    }   
 
     // Hàm tìm kiếm điện thoại theo mã
     private ArrayList<Phones> searchPhoneById(String phoneId) {
@@ -308,24 +296,7 @@ public class View_Customer extends JFrame {
         }
         return result;
     }
-
-    // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
-    private ArrayList<Phones> filterPhones(String filter) {
-        if (filter.equals("All Brand")) {
-            return phoneList;
-        }
-        ArrayList<Phones> filteredPhones = new ArrayList<>();
-        for (Phones phone : phoneList) {
-            if (filter.startsWith("Brand: ")) {
-                String brand = filter.substring(7);
-                if (phone.getBrand().equalsIgnoreCase(brand)) {
-                    filteredPhones.add(phone);
-                }
-            }
-        }
-        return filteredPhones;
-    }
-
+    
     // Phương thức hiển thị giỏ hàng với checkbox để xác nhận các đơn hàng muốn mua
     private void showCart() {
         ArrayList<Order> allOrders = CsvFileHandler.readOrdersFromCSV();
