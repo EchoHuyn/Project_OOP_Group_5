@@ -18,7 +18,7 @@
 
 <a name = "Gioithieu"></a>
 
-##I. Giới thiệu
+## I. Giới thiệu
 
 Hệ thống quản lý shop điện thoại giúp bạn quản lý và theo dõi thông tin của các sản phẩm, đơn hàng. Từ đó sẽ giúp chúng ta trong việc quản lý cửa hàng, tối ưu nhân lực và tập trung nhiều hơn đến các khía canh khác của công việc.
 
