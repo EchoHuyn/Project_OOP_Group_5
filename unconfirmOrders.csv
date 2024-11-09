@@ -1,8 +1,8 @@
 Email,Phone ID,Brand,Model,Price,Quantity,Purchase Time,Discount,Status
 ngvanminh123,P003,Xiaomi,i3,800,3,2024-11-09 14:44:07,No discount,Pending
 lethianh3,P002,Samsung,Galaxy S21,799.66,5,2024-11-09 16:24:40,No discount,Pending
-dangthanhhuyen2k4,P010,Huawei,P40 Pro,799.99,3,2024-11-09 20:45:42,No discount,Pending
 trbao2,P009,Nokia,8.3,549.99,2,2024-11-09 21:08:36,No discount,Pending
 trbao2,P003,Xiaomi,Mi 11,599.99,2,2024-11-09 21:09:20,No discount,Pending
 ngmaihanoi,P007,Oppo,Find X3,2986.96,4,2024-11-09 21:22:18,huy123,Pending
 ngmaihanoi,P001,Apple,iPhone 13,986.99,1,2024-11-09 21:24:46,huy123,Pending
+dangthanhhuyen2k4,P001,Apple,iPhone 13,989.99,1,2024-11-09 23:19:57,voucher01,Pending
