@@ -18,7 +18,7 @@
 
 <a name = "Gioithieu"></a>
 
-##I. Giới thiệu
+## I. Giới thiệu
 
 Hệ thống quản lý shop điện thoại giúp bạn quản lý và theo dõi thông tin của các sản phẩm, đơn hàng. Từ đó sẽ giúp chúng ta trong việc quản lý cửa hàng, tối ưu nhân lực và tập trung nhiều hơn đến các khía canh khác của công việc.
 
@@ -35,7 +35,7 @@ Hệ thống quản lý shop điện thoại giúp bạn quản lý và theo dõ
 - **Tài khoản người mua**:
   - Người mua cần đăng ký tài khoản.
   - Đăng nhập tài khoản vừa tạo.
-  - Quyền: Cho phép truy cập danh mục sản phẩm đã có
+  - Quyền: Cho phép truy cập danh mục sản phẩm đã có, xem lịch sử mua hàng cá nhân.
 - **Tài khoản người bán**:
   - Username: `oop5`
   - Password: `123`
@@ -62,13 +62,13 @@ Sau khi cài đặt thành công, chúng ta sẽ có hai vai trò lựa chọn �
 
 - **Mô tả**: Người mua kiểm tra sản phẩm đã thêm vào giỏ.
 
-#### 1.3 Hoàn tất mua hàng
-
-- **Mô tả**: Người mua chọn sản phẩm cần mua và gửi yêu cầu mua hàng tới người bán.
-
-#### 1.4 Xoá sản phẩm
+#### 1.3 Xoá sản phẩm
 
 - **Mô tả**: Người mua xoá sản phẩm khỏi giỏ hàng đã thêm khi thấy không cần thiết.
+  
+#### 1.4 Hoàn tất mua hàng
+
+- **Mô tả**: Người mua thực hiện thanh toán với người bán, và đơn hàng sẽ được lưu vào lịch sử mua hàng.
 
 #### 1.5 Thoát tài khoản
 
@@ -95,6 +95,9 @@ Sau khi cài đặt thành công, chúng ta sẽ có hai vai trò lựa chọn �
 #### 2.3 Xoá
 
 - **Mô tả**: Xoá sản phẩm điện thoại trong danh sách hiện tại.
+
+### 2.4 Xác nhận đơn hàng.
+- **Mô tả**: Xác nhận các sản phẩm khách hàng muốn mua và lưu lại vào lịch sử mua hàng.
 
 #### 2.4 Thoát tài khoản
 
