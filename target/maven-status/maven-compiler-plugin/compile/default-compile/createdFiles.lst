@@ -12,6 +12,7 @@ Seller\View_Seller_Phones.class
 loginAnhRegister\View_Customer$3.class
 extensions\SendEmail.class
 Seller\View_Seller_Order$1.class
+Seller\Controller_Seller.class
 loginAnhRegister\Main.class
 loginAnhRegister\View_Customer$2.class
 extensions\Check_OTP.class

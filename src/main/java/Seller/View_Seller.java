@@ -41,7 +41,7 @@ public class View_Seller extends JFrame {
 
         // Nút Danh sách người mua hàng
         btnCustomerList = new JButton("Customer List");
-        styleButton(btnCustomerList);
+        Controller_Seller.styleButton(btnCustomerList);
         buttonPanel.add(btnCustomerList);
 
         btnCustomerList.addActionListener(new ActionListener() {
@@ -54,7 +54,7 @@ public class View_Seller extends JFrame {
 
         // Nút Danh sách sản phẩm
         btnProductList = new JButton("Product List");
-        styleButton(btnProductList);
+        Controller_Seller.styleButton(btnProductList);
         buttonPanel.add(btnProductList);
         btnProductList.addActionListener(new ActionListener() {
             @Override
@@ -66,7 +66,7 @@ public class View_Seller extends JFrame {
 
         // Nút Các đơn hàng chưa xác nhận
         btnUnconfirmedOrders = new JButton("Unconfirmed Orders");
-        styleButton(btnUnconfirmedOrders);
+        Controller_Seller.styleButton(btnUnconfirmedOrders);
         buttonPanel.add(btnUnconfirmedOrders);
 
         btnUnconfirmedOrders.addActionListener(new ActionListener() {
@@ -79,20 +79,20 @@ public class View_Seller extends JFrame {
 
         // Nút Quản lý mã giảm giá
         btnManageDiscount = new JButton("Manage Discount Codes");
-        styleButton(btnManageDiscount);
+        Controller_Seller.styleButton(btnManageDiscount);
         buttonPanel.add(btnManageDiscount);
 
         btnManageDiscount.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                manageDiscountCode();
+                Controller_Seller.manageDiscountCode();
             }
         });
 
         // Nút Quay lại đăng nhập
         btnBackToLogin = new JButton("Back to Login");
         btnBackToLogin.setForeground(Color.RED);
-        styleButton(btnBackToLogin);
+        Controller_Seller.styleButton(btnBackToLogin);
         buttonPanel.add(btnBackToLogin);
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
@@ -115,80 +115,6 @@ public class View_Seller extends JFrame {
                 }
             }
         });
-    }
-
-    private void styleButton(JButton button) {
-        button.setFont(new Font("Arial", Font.PLAIN, 18));
-        button.setBackground(new Color(0, 153, 255));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-    }
-
-    private void manageDiscountCode() {
-        String[] options = {"Create Discount Code", "Delete Discount Code"};
-        int choice = JOptionPane.showOptionDialog(this, "Select discount code action", "Manage Discount Codes",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
-        if (choice == 0) {
-            createDiscountCode();
-        } else if (choice == 1) {
-            deleteDiscountCode();
-        }
-    }
-
-    private void createDiscountCode() {
-        JTextField discountCodeField = new JTextField();
-        JTextField discountAmountField = new JTextField();
-
-        Object[] message = {
-            "Discount Code:", discountCodeField,
-            "Discount Amount (Dollar):", discountAmountField
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Create Discount Code", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            String discountCode = discountCodeField.getText();
-            String discountAmount = discountAmountField.getText();
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("DiscountCode.csv", true))) {
-                writer.write(discountCode + "," + discountAmount);
-                writer.newLine();
-                JOptionPane.showMessageDialog(this, "Discount code successfully added!");
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error saving discount code", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private void deleteDiscountCode() {
-        ArrayList<String> discountCodes = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("DiscountCode.csv"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                discountCodes.add(line);
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error loading discount codes", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String[] codesArray = discountCodes.toArray(new String[0]);
-        String selectedCode = (String) JOptionPane.showInputDialog(this, "Select discount code to delete:",
-                "Delete Discount Code", JOptionPane.PLAIN_MESSAGE, null, codesArray, codesArray[0]);
-
-        if (selectedCode != null) {
-            discountCodes.remove(selectedCode);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("DiscountCode.csv"))) {
-                for (String code : discountCodes) {
-                    writer.write(code);
-                    writer.newLine();
-                }
-                JOptionPane.showMessageDialog(this, "Discount code successfully deleted!");
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error deleting discount code", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     public static void display() {
