@@ -50,11 +50,17 @@ public class View_Seller extends JFrame {
             }
         });
 
-
         // Nút Danh sách sản phẩm
         btnProductList = new JButton("Danh sách sản phẩm");
         styleButton(btnProductList);
         buttonPanel.add(btnProductList);
+        btnProductList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                View_Seller_Phones.display();
+                dispose();
+            }
+        });
 
         // Nút Các đơn hàng chưa xác nhận
         btnUnconfirmedOrders = new JButton("Các đơn hàng chưa xác nhận");
@@ -69,7 +75,6 @@ public class View_Seller extends JFrame {
                 dispose();
             }
         });
-
 
         // Nút Quay lại đăng nhập
         btnBackToLogin = new JButton("Quay lại");
@@ -113,10 +118,6 @@ public class View_Seller extends JFrame {
         SwingUtilities.invokeLater(() -> {
             new View_Seller().setVisible(true);
         });
-    }
-
-    public static void main(String[] args) {
-        display();
     }
     
     public void addPhoneQuantity(String phoneId, int quantity) {

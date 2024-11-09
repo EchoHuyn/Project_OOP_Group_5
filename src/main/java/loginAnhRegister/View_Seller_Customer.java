@@ -148,6 +148,7 @@ public class View_Seller_Customer extends JFrame {
 
         backButton.addActionListener(e -> {
             // Xử lý sự kiện quay lại sẽ được thêm ở đây
+            View_Seller.display();
             dispose();
         });
     }

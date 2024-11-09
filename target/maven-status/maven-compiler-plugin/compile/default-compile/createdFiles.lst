@@ -10,13 +10,16 @@ loginAnhRegister\LoginForm$2.class
 loginAnhRegister\View_Seller$2.class
 loginAnhRegister\View_Customer$3.class
 extensions\SendEmail.class
+loginAnhRegister\View_Seller$4.class
 loginAnhRegister\Main.class
 loginAnhRegister\View_Customer$2.class
 extensions\Check_OTP.class
 loginAnhRegister\View_Customer$5.class
 Model\Customer.class
 loginAnhRegister\RegisterForm$2.class
+loginAnhRegister\View_Seller_Phones.class
 loginAnhRegister\LoginForm$1.class
+loginAnhRegister\View_Seller_Order$1.class
 loginAnhRegister\View_Seller_Order.class
 Model\Seller.class
 loginAnhRegister\LoginForm.class

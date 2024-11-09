@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -114,7 +116,13 @@ public class View_Seller_Order extends JFrame {
         backButton.setBackground(new Color(192, 192, 192));
         backButton.setForeground(Color.BLACK);
         backButton.setPreferredSize(new Dimension(200, 40));
-        backButton.addActionListener(e -> {});
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                View_Seller.display();
+                dispose();
+            }
+        });
 
         buttonPanel.add(confirmButton);
         buttonPanel.add(exportInvoiceButton);
