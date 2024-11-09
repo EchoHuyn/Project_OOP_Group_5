@@ -1,4 +1,4 @@
-package loginAnhRegister;
+package Seller;
 
 import Model.Customer;
 import Model.Order;

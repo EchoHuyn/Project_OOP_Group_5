@@ -1,5 +1,6 @@
 package loginAnhRegister;
 
+import Seller.View_Seller;
 import Model.Customer;
 import Model.Seller;
 import extensions.SendEmail;

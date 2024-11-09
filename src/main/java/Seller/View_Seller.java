@@ -1,4 +1,4 @@
-package loginAnhRegister;
+package Seller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
+import loginAnhRegister.LoginForm;
 
 public class View_Seller extends JFrame {
 

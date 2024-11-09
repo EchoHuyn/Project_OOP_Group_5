@@ -1,5 +1,6 @@
 package loginAnhRegister;
 
+import Customer.Controller_Customer;
 import Model.Order;
 import Model.Phones;
 import extensions.CsvFileHandler;
@@ -61,7 +62,7 @@ public class View_Customer extends JFrame {
         phoneTable.setGridColor(Color.LIGHT_GRAY);
         phoneTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
         phoneTable.getTableHeader().setBackground(new Color(220, 220, 220));
-        loadPhoneDataToTable(phoneList);
+        Controller_Customer.loadPhoneDataToTable(tableModel, phoneList);
 
         JScrollPane scrollPane = new JScrollPane(phoneTable);
 
@@ -141,7 +142,7 @@ public class View_Customer extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String searchId = searchField.getText();
                 ArrayList<Phones> filteredPhones = searchPhoneById(searchId);
-                loadPhoneDataToTable(filteredPhones);
+                Controller_Customer.loadPhoneDataToTable(tableModel, filteredPhones);
             }
         });
 
@@ -264,7 +265,7 @@ public class View_Customer extends JFrame {
         filterComboBox.addActionListener(e -> {
             String selectedFilter = (String) filterComboBox.getSelectedItem();
             ArrayList<Phones> filteredPhones = filterPhones(selectedFilter);
-            loadPhoneDataToTable(filteredPhones);
+            Controller_Customer.loadPhoneDataToTable(tableModel, filteredPhones);
         });
 
         // Đặt giao diện ra giữa màn hình
@@ -290,7 +291,7 @@ public class View_Customer extends JFrame {
                 break;
             }
         }
-        loadPhoneDataToTable(phoneList);
+        Controller_Customer.loadPhoneDataToTable(tableModel, phoneList);
         CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
     }
 
@@ -351,10 +352,11 @@ public class View_Customer extends JFrame {
                 order.getPhones().getPhoneId(),
                 order.getPhones().getBrand(),
                 order.getPhones().getModel(),
-                order.getPhones().getPrice(),
+                String.format("%.2f", Double.parseDouble(order.getPhones().getPrice())), // Format to 2 decimal places
                 order.getPhones().getStockQuantity(),
                 order.getStatus()
             };
+
             cartTableModel.addRow(row);
         }
 
@@ -403,22 +405,7 @@ public class View_Customer extends JFrame {
 
         cartFrame.setLocationRelativeTo(this);
         cartFrame.setVisible(true);
-    }
-
-    // Hàm load dữ liệu từ ArrayList<Phones> lên bảng
-    private void loadPhoneDataToTable(ArrayList<Phones> phones) {
-        tableModel.setRowCount(0); // Xóa các hàng cũ
-        for (Phones phone : phones) {
-            Object[] rowData = {
-                phone.getPhoneId(),
-                phone.getBrand(),
-                phone.getModel(),
-                phone.getPrice(),
-                phone.getStockQuantity()
-            };
-            tableModel.addRow(rowData);
-        }
-    }
+    }   
 
     public static void display(String name, String email) {
         SwingUtilities.invokeLater(() -> {
