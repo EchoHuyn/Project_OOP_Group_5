@@ -214,7 +214,7 @@ public class View_Customer extends JFrame {
         }
         return result;
     }
-
+                                                                                                                                                                                                                                                                                         
     // Hàm lọc điện thoại theo tiêu chí lọc đã chọn
     private ArrayList<Phones> filterPhones(String filter) {
         if (filter.equals("All")) {
@@ -235,28 +235,27 @@ public class View_Customer extends JFrame {
     private void saveOrderToCSV(String phoneId, String brand, String model, String price, int quantity, String discountCode) {
         // Tạo tên file từ email khách hàng
         String email = customerEmail.replace("@gmail.com", "");
-        String fileName = "orderHistory/" + email + ".csv";
-
-        try (FileWriter writer = new FileWriter(fileName, true)) { // Chế độ append
+        String logFileName  = "unconfirmOrders.csv";
+        
+        try (FileWriter logWriter = new FileWriter(logFileName, true)) {
             // Lấy thời gian hiện tại
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
             // Ghi dữ liệu vào file
-            writer.append(phoneId).append(",")
-                    .append(brand).append(",")
-                    .append(model).append(",")
-                    .append(price).append(",")
-                    .append(String.valueOf(quantity)).append(",")
-                    .append(timeStamp).append(",");
-
-            // Thêm mã giảm giá nếu có
+            String data = email + "," +
+              phoneId + "," +
+              brand + "," +
+              model + "," +
+              price + "," +
+              String.valueOf(quantity) + "," +
+              timeStamp + ",";
+            
             if (discountCode != null && !discountCode.trim().isEmpty()) {
-                writer.append(discountCode);
+                data += discountCode;
             } else {
-                writer.append("No discount");
+                data += "No discount";
             }
-
-            writer.append("\n");
+            logWriter.append(data);
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error saving order to CSV.", "Error", JOptionPane.ERROR_MESSAGE);

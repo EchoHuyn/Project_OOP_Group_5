@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 
 public class View_Seller extends JFrame {
 
@@ -90,5 +91,96 @@ public class View_Seller extends JFrame {
     
     public static void main(String[] args) {
         display();
+    }
+    
+    public void addPhoneQuantity(String phoneId, int quantity) {
+        File inputFile = new File("phones.csv");
+        File tempFile = new File("phones_temp.csv");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String header = reader.readLine(); // Đọc dòng đầu tiên (nhãn cột)
+            writer.write(header + System.lineSeparator());
+
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                String[] data = currentLine.split(",");
+                if (data[0].equals(phoneId)) {
+                    int currentStock = Integer.parseInt(data[4]);
+                    data[4] = String.valueOf(currentStock + quantity);
+                    currentLine = String.join(",", data);
+                }
+                writer.write(currentLine + System.lineSeparator());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Delete the original file
+        if (!inputFile.delete()) {
+            System.out.println("Could not delete file");
+            return;
+        }
+
+        // Rename the new file to the filename the original file had.
+        if (!tempFile.renameTo(inputFile)) {
+            System.out.println("Could not rename file");
+        }
+    }
+    
+    public void confirmOrder(String email, String phoneId, String brand, String model, double price, int quantity, String timeStamp, String discountCode) {
+        // Tạo tên file từ email
+        String fileName = email.replace("@gmail.com", "") + ".txt";
+        File orderFile = new File("orderHistory/" + fileName);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(orderFile, true))) {
+            // Ghi dữ liệu vào file
+            writer.write(phoneId + "," + brand + "," + model + "," + price + "," + quantity + "," + timeStamp + "," + discountCode);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void removeOrder(String email, String phoneId, String brand, String model, double price, int quantity, String timeStamp, String discountCode) {
+        File inputFile = new File("unconfirmOrder.csv");
+        File tempFile = new File("unconfirmOrder_temp.csv");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                String[] data = currentLine.split(",");
+                if (data.length == 8 &&
+                    data[0].equals(email) &&
+                    data[1].equals(phoneId) &&
+                    data[2].equals(brand) &&
+                    data[3].equals(model) &&
+                    Double.parseDouble(data[4]) == price &&
+                    Integer.parseInt(data[5]) == quantity &&
+                    data[6].equals(timeStamp) &&
+                    data[7].equals(discountCode)) {
+                    continue; // Skip this line
+                }
+                writer.write(currentLine + System.lineSeparator());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Delete the original file
+        if (!inputFile.delete()) {
+            System.out.println("Could not delete file");
+            return;
+        }
+
+        // Rename the new file to the filename the original file had.
+        if (!tempFile.renameTo(inputFile)) {
+            System.out.println("Could not rename file");
+        }
     }
 }
