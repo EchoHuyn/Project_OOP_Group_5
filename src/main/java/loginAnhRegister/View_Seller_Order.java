@@ -24,7 +24,7 @@ public class View_Seller_Order extends JFrame {
 
     public View_Seller_Order(ArrayList<Order> orders) {
         this.orders = orders;
-        setTitle("Danh sách đơn hàng");
+        setTitle("Order List");
         setSize(1400, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -46,7 +46,7 @@ public class View_Seller_Order extends JFrame {
         emailComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
 
         // Thêm các email vào JComboBox để người dùng chọn lọc
-        emailComboBox.addItem("Tất cả");
+        emailComboBox.addItem("All");
         HashSet<String> emails = new HashSet<>();
         for (Order order : orders) {
             emails.add(order.getEmail());
@@ -56,13 +56,13 @@ public class View_Seller_Order extends JFrame {
         }
 
         // Nút "Lọc" để thực hiện lọc email
-        JButton filterButton = new JButton("Lọc");
+        JButton filterButton = new JButton("Filter");
         filterButton.setFont(new Font("Arial", Font.BOLD, 14));
         filterButton.setBackground(new Color(100, 149, 237));
         filterButton.setForeground(Color.WHITE);
         filterButton.addActionListener(e -> filterOrdersByEmail());
 
-        filterPanel.add(new JLabel("Chọn Email:"));
+        filterPanel.add(new JLabel("Select Email:"));
         filterPanel.add(emailComboBox);
         filterPanel.add(filterButton);
         add(filterPanel, BorderLayout.NORTH);
@@ -94,23 +94,15 @@ public class View_Seller_Order extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(245, 245, 245));
 
-        // Nút xác nhận đơn hàng
-        JButton confirmButton = new JButton("Xác nhận đơn hàng");
+        // Confirm orders button
+        JButton confirmButton = new JButton("Confirm Order");
         confirmButton.setFont(new Font("Arial", Font.BOLD, 14));
         confirmButton.setBackground(new Color(34, 139, 34));
         confirmButton.setForeground(Color.WHITE);
         confirmButton.setPreferredSize(new Dimension(200, 40));
         confirmButton.addActionListener(e -> confirmSelectedOrders());
 
-        // Nút xuất hóa đơn (tạm thời chưa xử lý sự kiện)
-        JButton exportInvoiceButton = new JButton("Xuất hóa đơn");
-        exportInvoiceButton.setFont(new Font("Arial", Font.BOLD, 14));
-        exportInvoiceButton.setBackground(new Color(70, 130, 180));
-        exportInvoiceButton.setForeground(Color.WHITE);
-        exportInvoiceButton.setPreferredSize(new Dimension(200, 40));
-        exportInvoiceButton.addActionListener(e -> {});
-
-        // Nút quay lại (tạm thời chưa xử lý sự kiện)
+        // Back button
         JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
         backButton.setBackground(new Color(192, 192, 192));
@@ -125,7 +117,6 @@ public class View_Seller_Order extends JFrame {
         });
 
         buttonPanel.add(confirmButton);
-        buttonPanel.add(exportInvoiceButton);
         buttonPanel.add(backButton);
         add(buttonPanel, BorderLayout.SOUTH);
     }
@@ -152,10 +143,10 @@ public class View_Seller_Order extends JFrame {
     // Phương thức lọc đơn hàng theo email
     private void filterOrdersByEmail() {
         String selectedEmail = (String) emailComboBox.getSelectedItem();
-        tableModel.setRowCount(0); // Xóa các dòng cũ
+        tableModel.setRowCount(0); // Clear old rows
 
         for (Order order : orders) {
-            if ("Tất cả".equals(selectedEmail) || order.getEmail().equals(selectedEmail)) {
+            if ("All".equals(selectedEmail) || order.getEmail().equals(selectedEmail)) {
                 Object[] row = {
                         order.getEmail(),
                         order.getPhones().getPhoneId(),
@@ -176,27 +167,27 @@ public class View_Seller_Order extends JFrame {
     private void confirmSelectedOrders() {
         int[] selectedRows = orderTable.getSelectedRows();
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một đơn hàng để xác nhận.");
+            JOptionPane.showMessageDialog(this, "Please select at least one order to confirm.");
             return;
         }
 
-        // Duyệt qua các dòng đã chọn và xác nhận đơn hàng
-        for (int i = selectedRows.length - 1; i >= 0; i--) { // Duyệt ngược để tránh lỗi khi xóa hàng
+        // Iterate over selected rows and confirm each order
+        for (int i = selectedRows.length - 1; i >= 0; i--) { // Reverse iteration to avoid deletion issues
             int row = selectedRows[i];
             String status = (String) tableModel.getValueAt(row, 8);
 
-            // Kiểm tra trạng thái trước khi xác nhận
+            // Check the status before confirming
             if (!"Confirmed".equals(status)) {
                 tableModel.setValueAt("Confirmed", row, 8);
                 orders.get(row).setStatus("Confirmed");
-                moveOrderToHistory(orders.get(row)); // Di chuyển đơn hàng sang file lịch sử
-                tableModel.removeRow(row); // Xóa dòng đã xác nhận khỏi bảng
+                moveOrderToHistory(orders.get(row)); // Move the order to history file
+                tableModel.removeRow(row); // Remove the confirmed row from the table
                 orders.remove(orders.get(row));
                 CsvFileHandler.writeOrdersToUnconfirmOrders(orders);
             }
         }
 
-        JOptionPane.showMessageDialog(this, "Các đơn hàng đã được xác nhận và chuyển vào lịch sử.");
+        JOptionPane.showMessageDialog(this, "Orders have been confirmed and moved to history.");
     }
 
     // Phương thức di chuyển đơn hàng sang file lịch sử sau khi xác nhận
@@ -205,13 +196,13 @@ public class View_Seller_Order extends JFrame {
         File orderFile = new File(fileName);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(orderFile, true))) {
-            // Viết tiêu đề nếu file trống
+            // Write header if the file is empty
             if (orderFile.length() == 0) {
                 writer.write("Email,Phone ID,Brand,Model,Price,Quantity,Purchase Time,Discount,Status");
                 writer.newLine();
             }
 
-            // Ghi dữ liệu đơn hàng vào file
+            // Write order data to the file
             writer.write(
                     order.getPhones().getPhoneId() + ","
                     + order.getPhones().getBrand() + ","

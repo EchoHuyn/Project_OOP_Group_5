@@ -8,6 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -143,6 +146,7 @@ public class View_Customer extends JFrame {
         });
 
         // Xử lý sự kiện cho nút Add to Cart
+        // Xử lý sự kiện cho nút Add to Cart
         addToCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -156,7 +160,14 @@ public class View_Customer extends JFrame {
                 String phoneId = (String) tableModel.getValueAt(selectedRow, 0);
                 String phoneBrand = (String) tableModel.getValueAt(selectedRow, 1);
                 String phoneModel = (String) tableModel.getValueAt(selectedRow, 2);
-                String phonePrice = (String) tableModel.getValueAt(selectedRow, 3);
+                double phonePrice;
+
+                try {
+                    phonePrice = Double.parseDouble((String) tableModel.getValueAt(selectedRow, 3));
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid price format.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 // Lấy số lượng hàng tồn kho
                 int stockQuantity;
@@ -186,27 +197,48 @@ public class View_Customer extends JFrame {
                     return;
                 }
 
-                String quantityString = Integer.toString(quantity);
+                // Tính tổng giá trước khi giảm giá
+                double totalPrice = phonePrice * quantity;
 
                 // Nhập mã giảm giá (nếu có)
                 String discountCode = JOptionPane.showInputDialog("Enter discount code (optional):");
-                if (discountCode == null || discountCode.trim().isEmpty()) {
-                    discountCode = "No discount";
+                if (discountCode != null && !discountCode.trim().isEmpty()) {
+                    try (BufferedReader br = new BufferedReader(new FileReader("DiscountCode.csv"))) {
+                        String line;
+                        boolean discountFound = false;
+
+                        while ((line = br.readLine()) != null) {
+                            String[] data = line.split(",");
+                            if (data.length >= 2 && data[0].equalsIgnoreCase(discountCode.trim())) {
+                                double discountAmount = Double.parseDouble(data[1]);
+
+                                if (discountAmount > totalPrice) {
+                                    JOptionPane.showMessageDialog(null, "Discount amount exceeds total price. Cannot apply discount.", "Error", JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+
+                                totalPrice -= discountAmount;
+                                discountFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!discountFound) {
+                            JOptionPane.showMessageDialog(null, "Invalid discount code.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error reading discount codes.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
-                // Lấy tình trạng đơn hàng hiện tại
-                String status = "Pending";
+                // Ghi thông tin vào giỏ hàng sau khi áp dụng giảm giá
+                Phones phone = new Phones(phoneId, phoneBrand, phoneModel, String.valueOf(totalPrice), String.valueOf(quantity));
+                Order order = new Order(customerEmail, phone, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), discountCode, "Pending");
 
-                // Lấy thời gian hiện tại
-                String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-
-                Phones y = new Phones(phoneId, phoneBrand, phoneModel, phonePrice, quantityString);
-                Order x = new Order(customerEmail, y, timeStamp, discountCode, status);
-
-                // Ghi thông tin vào file CSV
-                CsvFileHandler.writeOrderToCSV(x);
-
-                // Cập nhật số lượng hàng tồn kho
+                CsvFileHandler.writeOrderToCSV(order);
                 updateStockQuantity(phoneId, stockQuantity - quantity);
 
                 JOptionPane.showMessageDialog(null, "You have successfully added the product to the cart.", "Cart", JOptionPane.INFORMATION_MESSAGE);

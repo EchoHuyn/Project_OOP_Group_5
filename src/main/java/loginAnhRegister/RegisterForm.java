@@ -22,54 +22,54 @@ public class RegisterForm extends JFrame {
     private String Email;
 
     public RegisterForm() {
-        setTitle("Đăng Kí");
+        setTitle("Register");
         setSize(450, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-// Đặt màu nền cho toàn bộ JFrame
-        getContentPane().setBackground(new Color(60, 63, 65)); // màu xám đậm
+        // Set background color for the entire JFrame
+        getContentPane().setBackground(new Color(60, 63, 65)); // dark gray color
 
-// Đặt bố cục chính
+        // Set the main layout
         setLayout(new BorderLayout());
 
-// Tiêu đề căn giữa
-        JLabel lblTitle = new JLabel("Đăng Kí", SwingConstants.CENTER);
+        // Centered title
+        JLabel lblTitle = new JLabel("Register", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-// Đặt màu nền cho lblTitle để phù hợp với màu nền xám đậm
+        // Set background color for lblTitle to match the dark gray background
         lblTitle.setBackground(new Color(60, 63, 65));
-        lblTitle.setOpaque(true); // Đảm bảo màu nền của lblTitle hiển thị
+        lblTitle.setOpaque(true); // Ensure the background color of lblTitle is visible
         add(lblTitle, BorderLayout.NORTH);
 
-// Panel chứa các thành phần
+        // Panel containing components
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        mainPanel.setBackground(new Color(60, 63, 65)); // màu nền đồng bộ
+        mainPanel.setBackground(new Color(60, 63, 65)); // consistent background color
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Các trường nhập liệu
-        addField("Tên:", txtName = new JTextField(15), mainPanel, gbc);
-        addField("Ngày sinh:", createBirthPanel(), mainPanel, gbc);
-        addField("Giới tính:", comboGender = new JComboBox<>(new String[]{"Female", "Male", "Other"}), mainPanel, gbc);
-        addField("Gmail:", txtEmail = new JTextField(), mainPanel, gbc);
-        addField("Địa chỉ:", txtAddress = new JTextField(), mainPanel, gbc);
-        addField("Tài khoản:", txtUsername = new JTextField(), mainPanel, gbc);
-        addField("Mật khẩu:", txtPassword = new JPasswordField(), mainPanel, gbc);
-        addField("Nhập lại mật khẩu:", txtPasswordConfirm = new JPasswordField(), mainPanel, gbc);
+        // Input fields
+        addField("Name:", txtName = new JTextField(15), mainPanel, gbc);
+        addField("Date of Birth:", createBirthPanel(), mainPanel, gbc);
+        addField("Gender:", comboGender = new JComboBox<>(new String[]{"Female", "Male", "Other"}), mainPanel, gbc);
+        addField("Email:", txtEmail = new JTextField(), mainPanel, gbc);
+        addField("Address:", txtAddress = new JTextField(), mainPanel, gbc);
+        addField("Username:", txtUsername = new JTextField(), mainPanel, gbc);
+        addField("Password:", txtPassword = new JPasswordField(), mainPanel, gbc);
+        addField("Confirm Password:", txtPasswordConfirm = new JPasswordField(), mainPanel, gbc);
 
-        // Tạo và thêm nút bấm
+        // Create and add buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(60, 63, 65)); // màu nền đồng bộ
-        btnRegister = new JButton("Xác nhận đăng kí");
+        buttonPanel.setBackground(new Color(60, 63, 65)); // consistent background color
+        btnRegister = new JButton("Confirm Registration");
         styleButton(btnRegister);
 
-        JButton btnBackToLogin = new JButton("Quay lại đăng nhập");
+        JButton btnBackToLogin = new JButton("Back to Login");
         styleButton(btnBackToLogin);
 
         buttonPanel.add(btnRegister);
@@ -80,18 +80,18 @@ public class RegisterForm extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(buttonPanel, gbc);
 
-        // Thêm mainPanel vào trung tâm của JFrame
+        // Add mainPanel to the center of JFrame
         add(mainPanel, BorderLayout.CENTER);
 
-        // Xử lý sự kiện nút
+        // Button event handling
         btnRegister.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (validateForm()) {
                     Email = txtEmail.getText();
                     OTP = Check_OTP.generateOTP();
-                    SendEmail.sendEmail_OTP(OTP, Email); // Gửi OTP qua email
-                    String inputOtp = JOptionPane.showInputDialog("Nhập mã OTP đã được gửi:");
+                    SendEmail.sendEmail_OTP(OTP, Email); // Send OTP via email
+                    String inputOtp = JOptionPane.showInputDialog("Enter the OTP sent to your email:");
 
                     if (inputOtp != null && inputOtp.equals(OTP)) {
                         saveAccountToFile(
@@ -103,11 +103,11 @@ public class RegisterForm extends JFrame {
                                 new String(txtPassword.getPassword()),
                                 txtEmail.getText()
                         );
-                        JOptionPane.showMessageDialog(RegisterForm.this, "Đăng kí thành công!");
+                        JOptionPane.showMessageDialog(RegisterForm.this, "Registration successful!");
                         LoginForm.display();
                         dispose();
                     } else {
-                        JOptionPane.showMessageDialog(null, "Mã OTP không chính xác, vui lòng thử lại!");
+                        JOptionPane.showMessageDialog(null, "Incorrect OTP, please try again!");
                     }
                 }
             }
@@ -118,8 +118,8 @@ public class RegisterForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int response = JOptionPane.showConfirmDialog(
                         RegisterForm.this,
-                        "Bạn có chắc chắn muốn quay lại khung đăng nhập?",
-                        "Xác nhận",
+                        "Are you sure you want to go back to login?",
+                        "Confirmation",
                         JOptionPane.YES_NO_OPTION
                 );
 
@@ -182,57 +182,57 @@ public class RegisterForm extends JFrame {
         return day + "/" + month + "/" + year;
     }
 
-    // Hàm kiểm tra form
+    // Form validation method
     private boolean validateForm() {
         String email = txtEmail.getText().trim();
         String password = new String(txtPassword.getPassword());
         String confirmPassword = new String(txtPasswordConfirm.getPassword());
 
-        // Kiểm tra ngày sinh hợp lệ
+        // Validate date of birth
         int day = (int) comboDay.getSelectedItem();
         int month = (int) comboMonth.getSelectedItem();
         int year = (int) comboYear.getSelectedItem();
 
         if (!isValidDate(day, month, year)) {
-            JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ, vui lòng nhập lại!");
+            JOptionPane.showMessageDialog(this, "Invalid date of birth, please enter again!");
             return false;
         }
 
-        // Kiểm tra email đuôi @gmail.com
+        // Check if email ends with @gmail.com
         if (!email.endsWith("@gmail.com")) {
-            JOptionPane.showMessageDialog(this, "Email phải có đuôi @gmail.com");
+            JOptionPane.showMessageDialog(this, "Email must end with @gmail.com");
             return false;
         }
 
-        // Kiểm tra mật khẩu có khớp nhau không
+        // Check if passwords match
         if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu không khớp nhau, vui lòng nhập lại!");
+            JOptionPane.showMessageDialog(this, "Passwords do not match, please enter again!");
             return false;
         }
 
-        // Kiểm tra xem email đã tồn tại trong file CSV chưa
+        // Check if email already exists in CSV file
         if (isEmailExist(email)) {
-            JOptionPane.showMessageDialog(this, "Email này đã được sử dụng. Vui lòng chọn email khác.");
+            JOptionPane.showMessageDialog(this, "This email is already in use. Please choose another email.");
             return false;
         }
 
-        // Chuẩn hóa họ và tên
+        // Standardize name and address
         txtName.setText(formatName(txtName.getText()));
         txtAddress.setText(formatName(txtAddress.getText()));
 
         return true;
     }
 
-    //Hàm chuẩn hóa tên
+    // Method to standardize name
     private String formatName(String name) {
-        name = name.trim().replaceAll("\\s+", " "); // Loại bỏ khoảng trắng thừa
+        name = name.trim().replaceAll("\\s+", " "); // Remove extra spaces
         String[] words = name.split(" ");
         StringBuilder formattedName = new StringBuilder();
 
         for (String word : words) {
             if (!word.isEmpty()) {
-                formattedName.append(Character.toUpperCase(word.charAt(0))) // Viết hoa chữ cái đầu
-                        .append(word.substring(1).toLowerCase()) // Viết thường các chữ cái còn lại
+                formattedName.append(Character.toUpperCase(word.charAt(0))) // Capitalize first letter
+                        .append(word.substring(1).toLowerCase()) // Lowercase remaining letters
                         .append(" ");
             }
         }
@@ -240,7 +240,7 @@ public class RegisterForm extends JFrame {
         return formattedName.toString().trim();
     }
 
-    // Hàm kiểm tra xem email có tồn tại trong file account.csv không
+    // Method to check if email exists in accountCustomers.csv
     private boolean isEmailExist(String email) {
         try (BufferedReader reader = new BufferedReader(new FileReader("accountCustomers.csv"))) {
             String line;
@@ -256,22 +256,22 @@ public class RegisterForm extends JFrame {
         return false;
     }
 
-    //Hàm kiểm tra ngày tháng năm
+    // Method to validate date
     private boolean isValidDate(int day, int month, int year) {
-        // Số ngày tối đa cho từng tháng
+        // Max days for each month
         int[] daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-        // Kiểm tra năm nhuận
+        // Check leap year
         if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
-            daysInMonth[1] = 29; // Tháng 2 có 29 ngày trong năm nhuận
+            daysInMonth[1] = 29; // February has 29 days in leap years
         }
 
         return day > 0 && day <= daysInMonth[month - 1];
     }
 
-    // Hàm lưu tài khoản vào file accountCustomers.csv
+    // Method to save account to accountCustomers.csv
     private void saveAccountToFile(String name, String birthDate, String gender, String address, String username, String password, String email) {
-        try (FileWriter writer = new FileWriter("accountCustomers.csv", true)) { // Mở file ở chế độ ghi tiếp (append mode)
+        try (FileWriter writer = new FileWriter("accountCustomers.csv", true)) { // Open file in append mode
             writer.append(name)
                     .append(",")
                     .append(gender)
@@ -287,9 +287,9 @@ public class RegisterForm extends JFrame {
                     .append(email)
                     .append("\n");
             writer.flush();
-            JOptionPane.showMessageDialog(this, "Tài khoản đã được lưu vào file accountCustomers.csv");
+            JOptionPane.showMessageDialog(this, "Account has been saved to accountCustomers.csv");
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi lưu tài khoản vào file");
+            JOptionPane.showMessageDialog(this, "An error occurred while saving the account");
         }
     }
 
@@ -301,7 +301,6 @@ public class RegisterForm extends JFrame {
         return String.format("%02d/%02d/%04d", day, month, year); // Ensure two-digit day and month with zero padding
     }
 
-    
     public static void display() {
         SwingUtilities.invokeLater(() -> {
             new RegisterForm().setVisible(true);

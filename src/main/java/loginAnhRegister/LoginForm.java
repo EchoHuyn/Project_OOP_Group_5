@@ -22,31 +22,31 @@ public class LoginForm extends JFrame {
     private ArrayList<Seller> admin;
 
     public LoginForm() {
-        setTitle("Đăng Nhập");
+        setTitle("Login");
         setSize(450, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Tạo Panel chính và đặt màu nền
+        // Create main panel and set background color
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(60, 63, 65));
 
-        // Tiêu đề
-        JLabel lblTitle = new JLabel("Đăng Nhập", SwingConstants.CENTER);
+        // Title label
+        JLabel lblTitle = new JLabel("Login", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         mainPanel.add(lblTitle, BorderLayout.NORTH);
 
-        // Panel cho các trường nhập liệu
+        // Panel for input fields
         JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         inputPanel.setBackground(new Color(60, 63, 65));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
 
-        // Tạo các thành phần
-        JLabel usernameLabel = new JLabel("Tên đăng nhập:");
-        JLabel passwordLabel = new JLabel("Mật khẩu:");
-        JLabel roleLabel = new JLabel("Chọn vai trò:");
+        // Create components
+        JLabel usernameLabel = new JLabel("Username:");
+        JLabel passwordLabel = new JLabel("Password:");
+        JLabel roleLabel = new JLabel("Select role:");
 
         usernameLabel.setForeground(Color.WHITE);
         passwordLabel.setForeground(Color.WHITE);
@@ -54,14 +54,14 @@ public class LoginForm extends JFrame {
 
         usernameField = new JTextField();
         passwordField = new JPasswordField();
-        loginButton = new JButton("Đăng nhập");
-        registerButton = new JButton("Đăng kí");
+        loginButton = new JButton("Login");
+        registerButton = new JButton("Register");
 
-        // ComboBox để chọn vai trò
+        // ComboBox for role selection
         String[] roles = {"customer", "admin"};
         roleComboBox = new JComboBox<>(roles);
 
-        // Thêm các thành phần vào inputPanel
+        // Add components to inputPanel
         inputPanel.add(usernameLabel);
         inputPanel.add(usernameField);
         inputPanel.add(passwordLabel);
@@ -71,10 +71,10 @@ public class LoginForm extends JFrame {
 
         mainPanel.add(inputPanel, BorderLayout.CENTER);
 
-        // Panel cho các nút hành động
+        // Panel for action buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.setBackground(new Color(60, 63, 65));
-        
+
         styleButton(loginButton);
         styleButton(registerButton);
 
@@ -85,7 +85,7 @@ public class LoginForm extends JFrame {
 
         add(mainPanel);
 
-        // Xử lý sự kiện khi bấm nút Đăng nhập
+        // Event handling for login button
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
@@ -93,10 +93,10 @@ public class LoginForm extends JFrame {
                 String role = roleComboBox.getSelectedItem().toString();
 
                 if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Vui lòng nhập tên đăng nhập và mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please enter username and password!", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     if (checkLogin(username, password, role)) {
-                        JOptionPane.showMessageDialog(null, "Đăng nhập thành công với vai trò: " + role);
+                        JOptionPane.showMessageDialog(null, "Login successful as role: " + role);
                         if (role.equals("customer")) {
                             for (Customer x : Customers) {
                                 if (x.getUsername().equals(username) && x.getPassword().equals(password)) {
@@ -105,24 +105,24 @@ public class LoginForm extends JFrame {
                                 }
                             }
                         }
-                        if(role.equals("admin")){
+                        if (role.equals("admin")) {
                             View_Seller.display();
                             dispose();
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Tên đăng nhập hoặc mật khẩu sai!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Incorrect username or password!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
 
-        // Xử lý sự kiện khi bấm nút Đăng kí
+        // Event handling for register button
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int option = JOptionPane.showConfirmDialog(
                         null,
-                        "Bạn có muốn đăng kí không?",
-                        "Xác nhận đăng kí",
+                        "Do you want to register?",
+                        "Confirm registration",
                         JOptionPane.OK_CANCEL_OPTION
                 );
 
@@ -136,7 +136,7 @@ public class LoginForm extends JFrame {
         setVisible(true);
     }
 
-    // Phương thức định dạng chung cho các nút
+    // Method for button styling
     private void styleButton(JButton button) {
         button.setFont(new Font("Arial", Font.PLAIN, 16));
         button.setBackground(new Color(0, 120, 215));
@@ -160,12 +160,12 @@ public class LoginForm extends JFrame {
                 String OTP = Check_OTP.generateOTP();
                 SendEmail.sendEmail_OTP(OTP, emailCheck);
 
-                String inputOtp = JOptionPane.showInputDialog(null, "\nVui lòng nhập mã OTP:");
+                String inputOtp = JOptionPane.showInputDialog(null, "Please enter the OTP:");
 
                 if (inputOtp != null && inputOtp.equals(OTP)) {
                     return true;
                 } else {
-                    JOptionPane.showMessageDialog(null, "Mã OTP không chính xác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Incorrect OTP!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
