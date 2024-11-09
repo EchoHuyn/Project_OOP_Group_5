@@ -139,12 +139,20 @@ public class View_Seller_Phones extends JFrame {
                 return;
             }
 
-            // Validate numeric fields
+            // Validate numeric fields and handle leading zeros and invalid values
             try {
-                Double.parseDouble(price);
-                Integer.parseInt(stockQuantity);
+                price = removeLeadingZeros(price);
+                stockQuantity = removeLeadingZeros(stockQuantity);
+
+                double priceValue = Double.parseDouble(price);
+                int stockValue = Integer.parseInt(stockQuantity);
+
+                if (priceValue <= 0 || stockValue <= 0) {
+                    JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be greater than 0.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be positive numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -199,12 +207,20 @@ public class View_Seller_Phones extends JFrame {
                 return;
             }
 
-            // Validate numeric fields
+            // Validate numeric fields and handle leading zeros and invalid values
             try {
-                Double.parseDouble(price);
-                Integer.parseInt(stockQuantity);
+                price = removeLeadingZeros(price);
+                stockQuantity = removeLeadingZeros(stockQuantity);
+
+                double priceValue = Double.parseDouble(price);
+                int stockValue = Integer.parseInt(stockQuantity);
+
+                if (priceValue <= 0 || stockValue <= 0) {
+                    JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be greater than 0.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be positive numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -220,6 +236,11 @@ public class View_Seller_Phones extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error editing phone. Please check inputs.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+// Helper method to remove leading zeros from a numeric string
+    private String removeLeadingZeros(String value) {
+        return value.replaceFirst("^0+(?!$)", "");
     }
 
     private void deletePhone() {
