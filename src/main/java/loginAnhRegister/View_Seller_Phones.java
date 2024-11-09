@@ -22,7 +22,7 @@ public class View_Seller_Phones extends JFrame {
 
         // Set background and font colors
         getContentPane().setBackground(new Color(240, 248, 255));
-        
+
         // Load phone data from CSV
         phoneList = CsvFileHandler.readPhonesFromCSV("phones.csv");
 
@@ -58,7 +58,7 @@ public class View_Seller_Phones extends JFrame {
         editPhoneButton.setFont(new Font("Arial", Font.BOLD, 14));
         editPhoneButton.setBackground(new Color(255, 165, 0));
         editPhoneButton.setForeground(Color.WHITE);
-        
+
         // Create "Back" button
         backButton = new JButton("Back");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
@@ -116,19 +116,108 @@ public class View_Seller_Phones extends JFrame {
             "Brand:", brandField,
             "Model:", modelField,
             "Price:", priceField,
-            "Stock Quantity:", stockField,
-        };
+            "Stock Quantity:", stockField,};
 
         int option = JOptionPane.showConfirmDialog(this, message, "Add New Phone", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            String newPhoneId = idField.getText().trim();
+            String brand = brandField.getText().trim().toUpperCase();
+            String model = modelField.getText().trim().toUpperCase();
+            String price = priceField.getText().trim();
+            String stockQuantity = stockField.getText().trim();
+
+            // Check for empty fields
+            if (newPhoneId.isEmpty() || brand.isEmpty() || model.isEmpty() || price.isEmpty() || stockQuantity.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Check for duplicate PhoneID
+            boolean isDuplicate = phoneList.stream().anyMatch(phone -> phone.getPhoneId().equals(newPhoneId));
+            if (isDuplicate) {
+                JOptionPane.showMessageDialog(this, "Error: Phone ID already exists.", "Duplicate Phone ID", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate numeric fields
             try {
-                Phones newPhone = new Phones(idField.getText(), brandField.getText(), modelField.getText(),
-                        priceField.getText(), stockField.getText());
+                Double.parseDouble(price);
+                Integer.parseInt(stockQuantity);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Add the new phone
+            try {
+                Phones newPhone = new Phones(newPhoneId, brand, model, price, stockQuantity);
                 phoneList.add(newPhone);
                 CsvFileHandler.writePhonesToCSV(phoneList, "phones.csv");
                 loadPhoneDataToTable(phoneList);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error adding phone. Please check inputs.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void editPhone() {
+        int selectedRow = phoneTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a phone to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String phoneId = (String) tableModel.getValueAt(selectedRow, 0);
+        Phones phoneToEdit = phoneList.stream().filter(phone -> phone.getPhoneId().equals(phoneId)).findFirst().orElse(null);
+
+        if (phoneToEdit == null) {
+            JOptionPane.showMessageDialog(this, "Phone not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JTextField brandField = new JTextField(phoneToEdit.getBrand());
+        JTextField modelField = new JTextField(phoneToEdit.getModel());
+        JTextField priceField = new JTextField(phoneToEdit.getPrice());
+        JTextField stockField = new JTextField(phoneToEdit.getStockQuantity());
+
+        Object[] message = {
+            "Brand:", brandField,
+            "Model:", modelField,
+            "Price:", priceField,
+            "Stock Quantity:", stockField,};
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Edit Phone", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String brand = brandField.getText().trim().toUpperCase();
+            String model = modelField.getText().trim().toUpperCase();
+            String price = priceField.getText().trim();
+            String stockQuantity = stockField.getText().trim();
+
+            // Check for empty fields
+            if (brand.isEmpty() || model.isEmpty() || price.isEmpty() || stockQuantity.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate numeric fields
+            try {
+                Double.parseDouble(price);
+                Integer.parseInt(stockQuantity);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Price and Stock Quantity must be numeric.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Update phone details
+            try {
+                phoneToEdit.setBrand(brand);
+                phoneToEdit.setModel(model);
+                phoneToEdit.setPrice(price);
+                phoneToEdit.setStockQuantity(stockQuantity);
+                CsvFileHandler.writePhonesToCSV(phoneList, "phones.csv");
+                loadPhoneDataToTable(phoneList);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error editing phone. Please check inputs.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -159,48 +248,6 @@ public class View_Seller_Phones extends JFrame {
         }
         CsvFileHandler.writePhonesToCSV(phoneList, "phones.csv");
         loadPhoneDataToTable(phoneList);
-    }
-
-    private void editPhone() {
-        int selectedRow = phoneTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a phone to edit.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String phoneId = (String) tableModel.getValueAt(selectedRow, 0);
-        Phones phoneToEdit = phoneList.stream().filter(phone -> phone.getPhoneId().equals(phoneId)).findFirst().orElse(null);
-
-        if (phoneToEdit == null) {
-            JOptionPane.showMessageDialog(this, "Phone not found.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        JTextField brandField = new JTextField(phoneToEdit.getBrand());
-        JTextField modelField = new JTextField(phoneToEdit.getModel());
-        JTextField priceField = new JTextField(phoneToEdit.getPrice());
-        JTextField stockField = new JTextField(phoneToEdit.getStockQuantity());
-
-        Object[] message = {
-            "Brand:", brandField,
-            "Model:", modelField,
-            "Price:", priceField,
-            "Stock Quantity:", stockField,
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Edit Phone", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try {
-                phoneToEdit.setBrand(brandField.getText());
-                phoneToEdit.setModel(modelField.getText());
-                phoneToEdit.setPrice(priceField.getText());
-                phoneToEdit.setStockQuantity(stockField.getText());
-                CsvFileHandler.writePhonesToCSV(phoneList, "phones.csv");
-                loadPhoneDataToTable(phoneList);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error editing phone. Please check inputs.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     public static void display() {

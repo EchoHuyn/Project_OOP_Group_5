@@ -142,7 +142,7 @@ public class View_Seller extends JFrame {
 
         Object[] message = {
             "Discount Code:", discountCodeField,
-            "Discount Amount (VND):", discountAmountField
+            "Discount Amount (Dollar):", discountAmountField
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Create Discount Code", JOptionPane.OK_CANCEL_OPTION);
