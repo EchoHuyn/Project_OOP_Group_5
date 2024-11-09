@@ -26,6 +26,7 @@ public class View_Customer extends JFrame {
     private ArrayList<Phones> phoneList;
     private String customerName;
     private String customerEmail;
+    private JFrame cartFrame; // Define cartFrame as a class variable
 
     public View_Customer(String name, String email) {
         this.customerName = name;
@@ -216,8 +217,11 @@ public class View_Customer extends JFrame {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (cartFrame != null && cartFrame.isDisplayable()) {
+                    cartFrame.dispose(); // Close cartFrame if it's open
+                }
                 LoginForm.display();
-                dispose(); // Đóng giao diện hiện tại
+                dispose(); // Close the main View_Customer frame
             }
         });
 
@@ -291,28 +295,22 @@ public class View_Customer extends JFrame {
         ArrayList<Order> allOrders = CsvFileHandler.readOrdersFromCSV();
         ArrayList<Order> customerOrders = new ArrayList<>();
 
-        System.out.println("Day la: " + customerEmail);
-
-        // Lọc các đơn hàng của khách hàng hiện tại
         for (Order order : allOrders) {
             if (order.getEmail().equals(customerEmail.replace("@gmail.com", ""))) {
                 customerOrders.add(order);
             }
         }
 
-        // Tạo cửa sổ giỏ hàng
-        JFrame cartFrame = new JFrame("Your Cart");
+        // Create cartFrame and show cart contents
+        cartFrame = new JFrame("Your Cart"); // Initialize cartFrame here
         cartFrame.setSize(600, 400);
         cartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-// Tạo bảng không có cột Select
         String[] columnNames = {"Phone ID", "Brand", "Model", "Price", "Quantity", "Status"};
         DefaultTableModel cartTableModel = new DefaultTableModel(columnNames, 0);
-
         JTable cartTable = new JTable(cartTableModel);
         cartTable.setRowHeight(25);
 
-// Load dữ liệu đơn hàng vào bảng
         for (Order order : customerOrders) {
             Object[] row = {
                 order.getPhones().getPhoneId(),
@@ -327,7 +325,6 @@ public class View_Customer extends JFrame {
 
         JScrollPane cartScrollPane = new JScrollPane(cartTable);
 
-// Nút xóa sản phẩm khỏi giỏ hàng
         JButton deleteSelectedButton = new JButton("Delete Selected Item");
         deleteSelectedButton.setFont(new Font("Arial", Font.BOLD, 14));
         deleteSelectedButton.setBackground(new Color(255, 0, 0));
@@ -337,23 +334,18 @@ public class View_Customer extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = cartTable.getSelectedRow();
-
-                // Kiểm tra nếu có một dòng được chọn
                 if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(cartFrame, "Please select an item to delete.");
                     return;
                 }
 
-                // Nếu có một sản phẩm được chọn, tiến hành xóa
                 Order orderToDelete = customerOrders.get(selectedRow);
-                allOrders.remove(orderToDelete); // Xóa sản phẩm khỏi allOrders
+                allOrders.remove(orderToDelete);
 
-                // Lấy thông tin sản phẩm từ đơn hàng vừa xóa
                 Phones phoneInOrder = orderToDelete.getPhones();
                 String phoneId = phoneInOrder.getPhoneId();
                 int quantityToAddBack = Integer.parseInt(phoneInOrder.getStockQuantity());
 
-                // Tìm sản phẩm trong danh sách `phoneList` và cập nhật lại số lượng tồn kho
                 for (Phones phone : phoneList) {
                     if (phone.getPhoneId().equalsIgnoreCase(phoneId)) {
                         int currentStock = Integer.parseInt(phone.getStockQuantity());
@@ -362,23 +354,18 @@ public class View_Customer extends JFrame {
                     }
                 }
 
-                // Ghi đè danh sách đơn hàng còn lại vào file "unconfirmOrders.csv"
                 CsvFileHandler.writeOrdersToUnconfirmOrders(allOrders);
-
-                // Cập nhật file "Phones.csv" với số lượng tồn kho mới
                 CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
 
                 JOptionPane.showMessageDialog(cartFrame, "Selected item has been deleted from your cart and stock quantity has been updated.");
-                cartFrame.dispose(); // Đóng cửa sổ giỏ hàng sau khi xóa
+                cartFrame.dispose();
             }
         });
 
-// Thêm các thành phần vào cửa sổ giỏ hàng
         cartFrame.setLayout(new BorderLayout());
         cartFrame.add(cartScrollPane, BorderLayout.CENTER);
         cartFrame.add(deleteSelectedButton, BorderLayout.SOUTH);
 
-// Hiển thị cửa sổ giỏ hàng
         cartFrame.setLocationRelativeTo(this);
         cartFrame.setVisible(true);
     }

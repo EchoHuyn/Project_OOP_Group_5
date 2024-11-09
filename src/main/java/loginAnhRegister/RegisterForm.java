@@ -246,7 +246,7 @@ public class RegisterForm extends JFrame {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] accountDetails = line.split(",");
-                if (accountDetails.length > 2 && accountDetails[2].equals(email)) {
+                if (accountDetails.length > 6 && accountDetails[6].equalsIgnoreCase(email)) { // Adjust index to 6 for email column
                     return true;
                 }
             }
