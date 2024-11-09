@@ -60,4 +60,18 @@ public class Controller_Customer {
         Controller_Customer.loadPhoneDataToTable(tableModel, phoneList);
         CsvFileHandler.writePhonesToCSV(phoneList, "Phones.csv");
     }
+    
+    // Hàm tìm kiếm điện thoại theo mã
+    public static ArrayList<Phones> searchPhoneById(String phoneId, ArrayList<Phones> phoneList) {
+        if (phoneId.equals("")) {
+            return phoneList;
+        }
+        ArrayList<Phones> result = new ArrayList<>();
+        for (Phones phone : phoneList) {
+            if (phone.getPhoneId().toLowerCase().contains(phoneId.toLowerCase())) {
+                result.add(phone);
+            }
+        }
+        return result;
+    }
 }

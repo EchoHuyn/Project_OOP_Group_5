@@ -141,7 +141,7 @@ public class View_Customer extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchId = searchField.getText();
-                ArrayList<Phones> filteredPhones = searchPhoneById(searchId);
+                ArrayList<Phones> filteredPhones = Controller_Customer.searchPhoneById(searchId, phoneList);
                 Controller_Customer.loadPhoneDataToTable(tableModel, filteredPhones);
             }
         });
@@ -281,21 +281,7 @@ public class View_Customer extends JFrame {
 
         // Đặt giao diện ra giữa màn hình
         setLocationRelativeTo(null);
-    }   
-
-    // Hàm tìm kiếm điện thoại theo mã
-    private ArrayList<Phones> searchPhoneById(String phoneId) {
-        if (phoneId.equals("")) {
-            return phoneList;
-        }
-        ArrayList<Phones> result = new ArrayList<>();
-        for (Phones phone : phoneList) {
-            if (phone.getPhoneId().toLowerCase().contains(phoneId.toLowerCase())) {
-                result.add(phone);
-            }
-        }
-        return result;
-    }
+    }    
     
     // Phương thức hiển thị giỏ hàng với checkbox để xác nhận các đơn hàng muốn mua
     private void showCart() {
