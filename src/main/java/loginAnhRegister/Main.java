@@ -1,6 +1,7 @@
 package loginAnhRegister;
 
 import Model.Customer;
+import Model.Order;
 import Model.Phones;
 import extensions.CsvFileHandler;
 import java.util.ArrayList;
@@ -42,7 +43,12 @@ public class Main {
 //            phone.displayPhoneInfo();
 //            System.out.println(); // In dòng trống giữa các điện thoại
 //        }
-
+//        ArrayList<Order> x = CsvFileHandler.readOrdersFromCSV();
+//        for(Order k :  x){
+//            System.out.println(k.toString());
+//        }
+        
+        
         LoginForm.display();
     }
 }

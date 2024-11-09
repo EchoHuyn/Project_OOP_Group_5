@@ -1,10 +1,12 @@
 package extensions;
 
 import Model.Customer;
+import Model.Order;
 import Model.Phones;
 import Model.Seller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,8 +14,7 @@ import java.util.ArrayList;
 
 public class CsvFileHandler {
     
-    //Xu li CSV Customer
-    
+    //Xu li CSV Customer  
     public static void writeCustomersToCSV(ArrayList<Customer> customers, String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             // Ghi tiêu đề cột
@@ -198,6 +199,115 @@ public class CsvFileHandler {
 
         return sellers;
     }
-   
+    
+    //Xử lý CSV của Order
+    public static void writeOrderToCSV(Order order) {
+        String logFileName = "unconfirmOrders.csv";
+        File orderFile = new File(logFileName);
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(orderFile, true))) {
+            // Ghi tiêu đề cột nếu file trống
+            if (orderFile.length() == 0) {
+                writer.write("Email,Phone ID,Phone Brand,Phone Model,Phone Price,Phone Stock Quantity,Purchase Time,Discount,Status");
+                writer.newLine();
+            }
+
+            // Ghi đơn hàng vào file
+            writer.write(order.getEmail().replace("@gmail.com", "") + ","
+                    + order.getPhones().getPhoneId() + ","
+                     + order.getPhones().getBrand() + ","
+                     + order.getPhones().getModel() + ","
+                     + order.getPhones().getPrice() + ","
+                     + order.getPhones().getStockQuantity() + ","
+                    + order.getPurchaseTime() + ","
+                    + order.getDiscount() + ","
+                    + order.getStatus());
+            writer.newLine();
+            
+            System.out.println("Đã ghi đơn hàng thành công vào file CSV: " + logFileName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static ArrayList<Order> readOrdersFromCSV() {
+        ArrayList<Order> orders = new ArrayList<>();
+        String logFileName = "unconfirmOrders.csv";
+        File orderFile = new File(logFileName);
+
+        // Kiểm tra nếu file không tồn tại
+        if (!orderFile.exists()) {
+            System.out.println("File không tồn tại: " + logFileName);
+            return orders; // Trả về danh sách trống nếu file không tồn tại
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(orderFile))) {
+            String line;
+            // Đọc tiêu đề cột (bỏ qua dòng đầu tiên)
+            reader.readLine();
+
+            // Đọc từng dòng dữ liệu
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+
+                // Đảm bảo dòng có đúng số lượng cột
+                if (data.length == 9) {
+                    // Tạo đối tượng Phones từ dữ liệu đọc được
+                    Phones phone = new Phones(data[1], data[2], data[3], data[4], data[5]);
+                    
+                    // Tạo đối tượng Order từ dữ liệu đọc được
+                    Order order = new Order(
+                        data[0],
+                        phone,
+                        data[6],  // purchaseTime
+                        data[7],  // discount
+                        data[8]   // status
+                    );
+                    // Thêm đơn hàng vào danh sách
+                    orders.add(order);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return orders;
+    }
+    
+    public static void writeOrdersToUnconfirmOrders(ArrayList<Order> orders) {
+        if (orders.isEmpty()) {
+            System.out.println("Danh sách đơn hàng trống, không có gì để ghi.");
+            return;
+        }
+       
+        String fileName = "unconfirmOrders.csv";
+        File orderFile = new File(fileName);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(orderFile))) {
+            // Ghi tiêu đề cho file CSV
+            writer.write("Email,Phone ID,Brand,Model,Price,Quantity,Purchase Time,Discount,Status");
+            writer.newLine();
+
+            // Ghi từng đơn hàng vào file
+            for (Order order : orders) {
+                writer.write(order.getEmail() + ","
+                        + order.getPhones().getPhoneId() + ","
+                        + order.getPhones().getBrand() + ","
+                        + order.getPhones().getModel() + ","
+                        + order.getPhones().getPrice() + ","
+                        + order.getPhones().getStockQuantity() + ","
+                        + order.getPurchaseTime() + ","
+                        + order.getDiscount() + ","
+                        + order.getStatus());
+                writer.newLine();
+            }
+
+            System.out.println("Ghi đè dữ liệu thành công vào file: " + fileName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

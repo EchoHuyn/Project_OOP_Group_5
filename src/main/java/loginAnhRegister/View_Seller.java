@@ -10,30 +10,31 @@ public class View_Seller extends JFrame {
 
     private JButton btnCustomerList;
     private JButton btnProductList;
+    private JButton btnUnconfirmedOrders; // Nút mới cho đơn hàng chưa xác nhận
     private JButton btnBackToLogin;
 
     public View_Seller() {
-        setTitle("Menu");
-        setSize(400, 300);
+        setTitle("Giao diện người bán");
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Tạo Panel chính và đặt màu nền
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.setBackground(new Color(60, 63, 65));
+        mainPanel.setBackground(new Color(45, 52, 54));
 
         // Tiêu đề
-        JLabel lblTitle = new JLabel("Menu", SwingConstants.CENTER);
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        JLabel lblTitle = new JLabel("Quản lý đơn hàng", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         mainPanel.add(lblTitle, BorderLayout.NORTH);
 
         // Panel nút chức năng
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10));
-        buttonPanel.setBackground(new Color(60, 63, 65));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
+        JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+        buttonPanel.setBackground(new Color(45, 52, 54));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 70, 10, 70));
 
         // Nút Danh sách người mua hàng
         btnCustomerList = new JButton("Danh sách người mua hàng");
@@ -45,8 +46,13 @@ public class View_Seller extends JFrame {
         styleButton(btnProductList);
         buttonPanel.add(btnProductList);
 
-        // Nút Back quay lại khung đăng nhập
-        btnBackToLogin = new JButton("Back");
+        // Nút Các đơn hàng chưa xác nhận
+        btnUnconfirmedOrders = new JButton("Các đơn hàng chưa xác nhận");
+        styleButton(btnUnconfirmedOrders);
+        buttonPanel.add(btnUnconfirmedOrders);
+
+        // Nút Quay lại đăng nhập
+        btnBackToLogin = new JButton("Quay lại");
         btnBackToLogin.setForeground(Color.RED);
         styleButton(btnBackToLogin);
         buttonPanel.add(btnBackToLogin);
@@ -54,7 +60,7 @@ public class View_Seller extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
         add(mainPanel);
 
-        // Xử lý sự kiện nút Back
+        // Xử lý sự kiện nút Quay lại
         btnBackToLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,19 +82,19 @@ public class View_Seller extends JFrame {
 
     // Phương thức định dạng chung cho các nút
     private void styleButton(JButton button) {
-        button.setFont(new Font("Arial", Font.PLAIN, 16));
-        button.setBackground(new Color(0, 120, 215));
+        button.setFont(new Font("Arial", Font.PLAIN, 18));
+        button.setBackground(new Color(0, 153, 255));
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
     }
 
     public static void display() {
         SwingUtilities.invokeLater(() -> {
             new View_Seller().setVisible(true);
         });
-    }   
-    
+    }
+
     public static void main(String[] args) {
         display();
     }

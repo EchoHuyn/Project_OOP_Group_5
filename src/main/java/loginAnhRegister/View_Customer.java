@@ -1,5 +1,6 @@
 package loginAnhRegister;
 
+import Model.Order;
 import Model.Phones;
 import extensions.CsvFileHandler;
 import javax.swing.*;
@@ -31,7 +32,7 @@ public class View_Customer extends JFrame {
 
     public View_Customer(String name, String email) {
         this.customerName = name;
-        this.customerEmail = email;
+        this.customerEmail = email;       
 
         // Thiết lập tiêu đề cho giao diện
         setTitle("Customer View - Phone Shopping");
@@ -140,12 +141,26 @@ public class View_Customer extends JFrame {
                     JOptionPane.showMessageDialog(null, "Invalid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
+                String quantityString = Integer.toString(quantity);;
 
                 // Nhập mã giảm giá (nếu có)
                 String discountCode = JOptionPane.showInputDialog("Enter discount code (optional):");
+                if (discountCode == null || discountCode.trim().isEmpty()) {
+                    discountCode += "No discount";
+                }
+                
+                //Lấy tình trạng đơn hàng hiện tại
+                String status = "Pending";
 
+                //Lấy thời gian hiện tại
+                String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                
+                Phones y = new Phones(phoneId, phoneBrand, phoneModel, phonePrice, quantityString);
+                Order x = new Order(customerEmail, y, timeStamp, discountCode, status);
+                
                 // Ghi thông tin vào file CSV
-                saveOrderToCSV(phoneId, phoneBrand, phoneModel, phonePrice, quantity, discountCode);
+                CsvFileHandler.writeOrderToCSV(x);
 
                 // Cập nhật số lượng hàng tồn kho
                 updateStockQuantity(phoneId, stockQuantity - quantity);
@@ -230,36 +245,6 @@ public class View_Customer extends JFrame {
             } 
         }
         return filteredPhones;
-    }
-
-    private void saveOrderToCSV(String phoneId, String brand, String model, String price, int quantity, String discountCode) {
-        // Tạo tên file từ email khách hàng
-        String email = customerEmail.replace("@gmail.com", "");
-        String logFileName  = "unconfirmOrders.csv";
-        
-        try (FileWriter logWriter = new FileWriter(logFileName, true)) {
-            // Lấy thời gian hiện tại
-            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-
-            // Ghi dữ liệu vào file
-            String data = email + "," +
-              phoneId + "," +
-              brand + "," +
-              model + "," +
-              price + "," +
-              String.valueOf(quantity) + "," +
-              timeStamp + ",";
-            
-            if (discountCode != null && !discountCode.trim().isEmpty()) {
-                data += discountCode;
-            } else {
-                data += "No discount";
-            }
-            logWriter.append(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error saving order to CSV.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     public static void display(String name, String email) {
