@@ -96,7 +96,7 @@ public class RegisterForm extends JFrame {
                     if (inputOtp != null && inputOtp.equals(OTP)) {
                         saveAccountToFile(
                                 txtName.getText(),
-                                getSelectedDate(),
+                                getFormattedDate(), // Use formatted date
                                 comboGender.getSelectedItem().toString(),
                                 txtAddress.getText(),
                                 txtUsername.getText(),
@@ -293,6 +293,15 @@ public class RegisterForm extends JFrame {
         }
     }
 
+    // Modified getSelectedDate method to return date in dd/mm/yyyy format
+    private String getFormattedDate() {
+        int day = (int) comboDay.getSelectedItem();
+        int month = (int) comboMonth.getSelectedItem();
+        int year = (int) comboYear.getSelectedItem();
+        return String.format("%02d/%02d/%04d", day, month, year); // Ensure two-digit day and month with zero padding
+    }
+
+    
     public static void display() {
         SwingUtilities.invokeLater(() -> {
             new RegisterForm().setVisible(true);

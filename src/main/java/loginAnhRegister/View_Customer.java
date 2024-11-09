@@ -99,7 +99,7 @@ public class View_Customer extends JFrame {
         // Tạo combo box lọc và thêm các thương hiệu duy nhất
         filterComboBox = new JComboBox<>();
         filterComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
-        filterComboBox.addItem("All"); // Tùy chọn mặc định là "All"
+        filterComboBox.addItem("All Brand"); // Tùy chọn mặc định là "All"
         for (String brand : uniqueBrands) {
             filterComboBox.addItem("Brand: " + brand);
         }
